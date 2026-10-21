@@ -8,4 +8,17 @@ const create: RequestHandler = (request, response) => {
 		.json(submissionsService.create(String(request.params.slug), request.body))
 }
 
-export const submissionsController = { create }
+const getAll: RequestHandler = (request, response) => {
+	response.json(submissionsService.getAll(Number(request.params.id)))
+}
+
+const getById: RequestHandler = (request, response) => {
+	response.json(
+		submissionsService.getById(
+			Number(request.params.id),
+			Number(request.params.submissionId)
+		)
+	)
+}
+
+export const submissionsController = { create, getAll, getById }

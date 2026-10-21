@@ -2,6 +2,7 @@ import { Router } from 'express'
 
 import { fieldsController } from '@server/controllers/fields.controller.js'
 import { formsController } from '@server/controllers/forms.controller.js'
+import { submissionsController } from '@server/controllers/submissions.controller.js'
 import { validate } from '@server/middleware/validate.middleware.js'
 import {
 	fieldDefinitionSchema,
@@ -12,6 +13,7 @@ import {
 	formIdParamsSchema,
 	updateFormSchema
 } from '@server/schemas/form.schema.js'
+import { submissionParamsSchema } from '@server/schemas/submission.schema.js'
 
 const formsRouter = Router()
 
@@ -31,6 +33,16 @@ formsRouter.post(
 	'/:id/publish',
 	validate('params', formIdParamsSchema),
 	formsController.publish
+)
+formsRouter.get(
+	'/:id/submissions',
+	validate('params', formIdParamsSchema),
+	submissionsController.getAll
+)
+formsRouter.get(
+	'/:id/submissions/:submissionId',
+	validate('params', submissionParamsSchema),
+	submissionsController.getById
 )
 formsRouter.get(
 	'/:id',

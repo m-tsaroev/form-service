@@ -139,4 +139,32 @@ const create = (slug: string, input: CreateSubmissionInput) => {
 	return submissionsRepository.create(form.id, input.answers)
 }
 
-export const submissionsService = { create }
+const ensureFormExists = (formId: number) => {
+	if (!formsRepository.findById(formId)) {
+		throw new HttpError(404, 'FORM_NOT_FOUND', 'Form not found')
+	}
+}
+
+const getAll = (formId: number) => {
+	ensureFormExists(formId)
+	return submissionsRepository.findAllByFormId(formId)
+}
+
+const getById = (formId: number, submissionId: number) => {
+	ensureFormExists(formId)
+	const submission = submissionsRepository.findByIdAndFormId(
+		submissionId,
+		formId
+	)
+
+	if (!submission) {
+		throw new HttpError(404, 'SUBMISSION_NOT_FOUND', 'Submission not found')
+	}
+
+	return {
+		...submission,
+		answers: submissionsRepository.findAnswers(submissionId)
+	}
+}
+
+export const submissionsService = { create, getAll, getById }
