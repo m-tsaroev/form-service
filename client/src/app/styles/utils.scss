@@ -1,0 +1,17 @@
+@use '@shared/styles/helpers' as *;
+
+.visually-hidden {
+	@include visually-hidden;
+}
+
+.visible-mobile {
+	@include mobile-above {
+		display: none !important;
+	}
+}
+
+.hidden-mobile {
+	@include mobile {
+		display: none !important;
+	}
+}

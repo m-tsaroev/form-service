@@ -1,0 +1,60 @@
+{
+	"name": "form-service",
+	"version": "1.0.0",
+	"private": true,
+	"description": "Autonomous service for creating and filling out forms",
+	"type": "module",
+	"engines": {
+		"node": ">=20"
+	},
+	"scripts": {
+		"dev": "concurrently -k -n client,server -c cyan,green \"npm:dev:client\" \"npm:dev:server\"",
+		"dev:client": "vite client --config client/vite.config.ts",
+		"dev:server": "tsx watch --tsconfig server/tsconfig.json server/src/index.ts",
+		"build": "npm run typecheck && vite build client --config client/vite.config.ts",
+		"typecheck": "tsc -b client/tsconfig.json server/tsconfig.json",
+		"prestart": "npm run build",
+		"start": "tsx --tsconfig server/tsconfig.json server/src/index.ts",
+		"lint": "eslint client/src server/src",
+		"format": "prettier --write client server *.md *.json *.js",
+		"format:check": "prettier --check client server *.md *.json *.js"
+	},
+	"dependencies": {
+		"@radix-ui/themes": "^3.3.0",
+		"@tanstack/react-query": "^5.104.5",
+		"axios": "^1.20.0",
+		"better-sqlite3": "^12.4.1",
+		"clsx": "^2.1.1",
+		"dotenv": "^18.0.8",
+		"express": "^5.1.0",
+		"lucide-react": "^1.61.0",
+		"radix-ui": "^1.8.1",
+		"react": "^19.2.0",
+		"react-dom": "^19.2.0",
+		"react-hook-form": "^7.90.0",
+		"react-router-dom": "^7.9.4",
+		"sass": "^1.106.0",
+		"zod": "^4.1.12",
+		"zustand": "^5.0.15"
+	},
+	"devDependencies": {
+		"@eslint/js": "^9.38.0",
+		"@trivago/prettier-plugin-sort-imports": "^6.0.2",
+		"@types/better-sqlite3": "^7.6.13",
+		"@types/express": "^5.0.3",
+		"@types/node": "^24.9.1",
+		"@types/react": "^19.2.2",
+		"@types/react-dom": "^19.2.2",
+		"@vitejs/plugin-react": "^5.0.4",
+		"concurrently": "^9.2.1",
+		"eslint": "^9.38.0",
+		"eslint-plugin-react-hooks": "^7.0.1",
+		"eslint-plugin-react-refresh": "^0.4.24",
+		"globals": "^16.4.0",
+		"prettier": "^3.9.10",
+		"tsx": "^4.20.6",
+		"typescript": "~5.9.3",
+		"typescript-eslint": "^8.46.2",
+		"vite": "^7.1.12"
+	}
+}

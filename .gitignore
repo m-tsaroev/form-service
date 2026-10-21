@@ -1,0 +1,7 @@
+node_modules/
+client/dist/
+*.tsbuildinfo
+*.local
+data/*.db
+data/*.db-*
+.DS_Store

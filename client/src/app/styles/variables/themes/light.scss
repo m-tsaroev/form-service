@@ -1,0 +1,29 @@
+:root[data-theme='light'] {
+	/* Background */
+	--background: #f8f7f6;
+	--background-gradient: linear-gradient(180deg, #fcfbfa 0%, #f2efec 100%);
+
+	/* Surfaces */
+	--surface: #fdfdfc;
+	--surface-secondary: #f6f4f2;
+	--surface-hover: #efebe8;
+
+	/* Borders */
+	--border-color: #e4dfdb;
+	--border-color-secondary: #d6d0cb;
+
+	/* Text */
+	--text-primary: #242220;
+	--text-secondary: #4a4643;
+	--text-tertiary: #78726d;
+	--text-placeholder: #a39d98;
+	--text-on-primary: #ffffff;
+
+	/* Primary */
+	--primary: #35312f;
+	--primary-hover: #2a2725;
+	--primary-active: #1f1d1c;
+
+	--primary-soft: #ebe7e4;
+	--primary-border: #d8d2cd;
+}

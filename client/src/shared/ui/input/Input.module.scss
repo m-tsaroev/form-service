@@ -1,0 +1,35 @@
+.input {
+	box-sizing: border-box;
+	width: 100%;
+	min-height: 44px;
+	padding: 10px 12px;
+	border: var(--border);
+	border-radius: var(--radius-md);
+	background-color: var(--surface);
+	color: var(--text-primary);
+	font: inherit;
+	line-height: 1.25;
+	transition-duration: var(--duration);
+
+	&::placeholder {
+		color: var(--text-placeholder);
+	}
+
+	@include hover {
+		border-color: var(--border-color-secondary);
+	}
+
+	&:focus-visible {
+		border-color: var(--primary-active);
+		outline: none;
+	}
+
+	&[aria-invalid='true'] {
+		border-color: var(--danger, #d64545);
+	}
+
+	&:disabled {
+		@include disabled;
+		background-color: var(--surface-hover);
+	}
+}
