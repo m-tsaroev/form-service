@@ -146,15 +146,36 @@ const fieldDefinitionSchema = z.discriminatedUnion('type', [
 	})
 ])
 
+const fieldIdParamsSchema = z.object({
+	id: z.coerce.number().int().positive()
+})
+
+const updateFieldSchema = z
+	.object({
+		type: fieldTypeSchema.optional(),
+		label: baseFieldShape.label.optional(),
+		description: baseFieldShape.description,
+		required: z.boolean().optional(),
+		config: z.unknown().optional()
+	})
+	.strict()
+	.refine(field => Object.keys(field).length > 0, {
+		message: 'At least one field must be provided'
+	})
+
 type FieldDefinition = z.infer<typeof fieldDefinitionSchema>
 type FieldOption = z.infer<typeof optionSchema>
 type FieldType = z.infer<typeof fieldTypeSchema>
+type UpdateFieldInput = z.infer<typeof updateFieldSchema>
 
 export {
 	fieldDefinitionSchema,
+	fieldIdParamsSchema,
 	fieldTypeSchema,
 	optionSchema,
+	updateFieldSchema,
 	type FieldDefinition,
 	type FieldOption,
-	type FieldType
+	type FieldType,
+	type UpdateFieldInput
 }

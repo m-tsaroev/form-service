@@ -6,7 +6,11 @@ import express from 'express'
 
 import { databasePath } from '@server/db/database.js'
 import { runMigrations } from '@server/db/migrate.js'
-import { apiNotFound, errorHandler } from '@server/middleware/error.middleware.js'
+import {
+	apiNotFound,
+	errorHandler
+} from '@server/middleware/error.middleware.js'
+import { fieldsRouter } from '@server/routes/fields.routes.js'
 import { formsRouter } from '@server/routes/forms.routes.js'
 
 const app = express()
@@ -23,6 +27,7 @@ app.get('/api/health', (_request, response) => {
 })
 
 app.use('/api/forms', formsRouter)
+app.use('/api/fields', fieldsRouter)
 app.use('/api', apiNotFound)
 
 app.use(express.static(clientDirectory))
