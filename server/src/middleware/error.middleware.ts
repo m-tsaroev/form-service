@@ -2,13 +2,16 @@ import type { ErrorRequestHandler, RequestHandler } from 'express'
 
 import { HttpError } from '@server/errors/http-error.js'
 
-const apiNotFound: RequestHandler = (_request, response) => {
-	response.status(404).json({
-		error: { code: 'ROUTE_NOT_FOUND', message: 'API route not found' }
-	})
+const apiNotFound: RequestHandler = (_request, _response, next) => {
+	next(new HttpError(404, 'ROUTE_NOT_FOUND', 'API route not found'))
 }
 
-const errorHandler: ErrorRequestHandler = (error, _request, response, _next) => {
+const errorHandler: ErrorRequestHandler = (
+	error,
+	_request,
+	response,
+	_next
+) => {
 	void _next
 
 	if (error instanceof HttpError) {
@@ -24,7 +27,10 @@ const errorHandler: ErrorRequestHandler = (error, _request, response, _next) => 
 
 	if (error instanceof SyntaxError && 'body' in error) {
 		response.status(400).json({
-			error: { code: 'INVALID_JSON', message: 'Request body contains invalid JSON' }
+			error: {
+				code: 'INVALID_JSON',
+				message: 'Request body contains invalid JSON'
+			}
 		})
 		return
 	}
