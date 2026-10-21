@@ -15,6 +15,7 @@
 		"typecheck": "tsc -b client/tsconfig.json server/tsconfig.json",
 		"prestart": "npm run build",
 		"start": "tsx --tsconfig server/tsconfig.json server/src/index.ts",
+		"test": "tsx --tsconfig server/tsconfig.json --test server/src/tests/**/*.test.ts",
 		"lint": "eslint client/src server/src",
 		"format": "prettier --write client server *.md *.json *.js",
 		"format:check": "prettier --check client server *.md *.json *.js"
