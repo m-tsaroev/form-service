@@ -1,10 +1,10 @@
 import { database } from '@server/db/database.js'
 import type { Field, Form, Page } from '@server/domain/models.js'
+import { fieldDefinitionSchema } from '@server/schemas/field.schema.js'
 import type {
 	CreateFormInput,
 	UpdateFormInput
 } from '@server/schemas/form.schema.js'
-import { fieldDefinitionSchema } from '@server/schemas/field.schema.js'
 
 type FormRow = {
 	id: number
@@ -72,9 +72,7 @@ const mapField = (row: FieldRow): Field => {
 
 const create = database.transaction((input: CreateFormInput) => {
 	const result = database
-		.prepare(
-			'INSERT INTO forms (title, description) VALUES (?, ?)'
-		)
+		.prepare('INSERT INTO forms (title, description) VALUES (?, ?)')
 		.run(input.title, input.description ?? null)
 	const formId = Number(result.lastInsertRowid)
 
@@ -87,13 +85,37 @@ const create = database.transaction((input: CreateFormInput) => {
 
 const findAll = () =>
 	database
-		.prepare<[], FormRow>('SELECT * FROM forms ORDER BY created_at DESC, id DESC')
+		.prepare<[], FormRow>(
+			'SELECT * FROM forms ORDER BY created_at DESC, id DESC'
+		)
 		.all()
 		.map(mapForm)
 
 const findById = (id: number) => {
-	const row = database.prepare<[number], FormRow>('SELECT * FROM forms WHERE id = ?').get(id)
+	const row = database
+		.prepare<[number], FormRow>('SELECT * FROM forms WHERE id = ?')
+		.get(id)
 	return row ? mapForm(row) : null
+}
+
+const findPublishedBySlug = (slug: string) => {
+	const row = database
+		.prepare<[string], FormRow>(
+			"SELECT * FROM forms WHERE slug = ? AND status = 'published'"
+		)
+		.get(slug)
+
+	return row ? mapForm(row) : null
+}
+
+const slugExists = (slug: string) => {
+	const row = database
+		.prepare<[string], { exists: 0 | 1 }>(
+			'SELECT EXISTS(SELECT 1 FROM forms WHERE slug = ?) AS `exists`'
+		)
+		.get(slug)
+
+	return row?.exists === 1
 }
 
 const findPages = (formId: number) =>
@@ -139,11 +161,28 @@ const update = (id: number, input: UpdateFormInput) => {
 	return result.changes > 0
 }
 
+const publish = (id: number, slug: string) => {
+	const result = database
+		.prepare(
+			`UPDATE forms
+			 SET status = 'published',
+			     slug = COALESCE(slug, ?),
+			     updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
+			 WHERE id = ?`
+		)
+		.run(slug, id)
+
+	return result.changes > 0
+}
+
 export const formsRepository = {
 	create,
 	findAll,
 	findById,
 	findFields,
 	findPages,
+	findPublishedBySlug,
+	publish,
+	slugExists,
 	update
 }

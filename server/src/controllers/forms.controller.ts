@@ -18,4 +18,19 @@ const update: RequestHandler = (request, response) => {
 	response.json(formsService.update(Number(request.params.id), request.body))
 }
 
-export const formsController = { create, getAll, getById, update }
+const publish: RequestHandler = (request, response) => {
+	response.json(formsService.publish(Number(request.params.id)))
+}
+
+const getPublicBySlug: RequestHandler = (request, response) => {
+	response.json(formsService.getPublicBySlug(String(request.params.slug)))
+}
+
+export const formsController = {
+	create,
+	getAll,
+	getById,
+	getPublicBySlug,
+	publish,
+	update
+}

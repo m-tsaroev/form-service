@@ -12,6 +12,7 @@ import {
 } from '@server/middleware/error.middleware.js'
 import { fieldsRouter } from '@server/routes/fields.routes.js'
 import { formsRouter } from '@server/routes/forms.routes.js'
+import { publicFormsRouter } from '@server/routes/public-forms.routes.js'
 
 const app = express()
 const port = Number(process.env.PORT) || 3000
@@ -28,6 +29,7 @@ app.get('/api/health', (_request, response) => {
 
 app.use('/api/forms', formsRouter)
 app.use('/api/fields', fieldsRouter)
+app.use('/api/public/forms', publicFormsRouter)
 app.use('/api', apiNotFound)
 
 app.use(express.static(clientDirectory))

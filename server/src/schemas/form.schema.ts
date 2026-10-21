@@ -5,6 +5,9 @@ const formDescriptionSchema = z.string().trim().max(2000).nullable()
 const formIdParamsSchema = z.object({
 	id: z.coerce.number().int().positive()
 })
+const formSlugParamsSchema = z.object({
+	slug: z.string().trim().min(1).max(100)
+})
 
 const createFormSchema = z
 	.object({
@@ -29,6 +32,7 @@ type UpdateFormInput = z.infer<typeof updateFormSchema>
 export {
 	createFormSchema,
 	formIdParamsSchema,
+	formSlugParamsSchema,
 	updateFormSchema,
 	type CreateFormInput,
 	type UpdateFormInput

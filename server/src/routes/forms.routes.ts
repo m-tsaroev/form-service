@@ -27,6 +27,11 @@ formsRouter.post(
 	validate('body', fieldDefinitionSchema),
 	fieldsController.create
 )
+formsRouter.post(
+	'/:id/publish',
+	validate('params', formIdParamsSchema),
+	formsController.publish
+)
 formsRouter.get(
 	'/:id',
 	validate('params', formIdParamsSchema),
