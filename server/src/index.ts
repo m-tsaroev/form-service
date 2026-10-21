@@ -6,6 +6,8 @@ import express from 'express'
 
 import { databasePath } from '@server/db/database.js'
 import { runMigrations } from '@server/db/migrate.js'
+import { apiNotFound, errorHandler } from '@server/middleware/error.middleware.js'
+import { formsRouter } from '@server/routes/forms.routes.js'
 
 const app = express()
 const port = Number(process.env.PORT) || 3000
@@ -20,6 +22,9 @@ app.get('/api/health', (_request, response) => {
 	response.json({ status: 'ok' })
 })
 
+app.use('/api/forms', formsRouter)
+app.use('/api', apiNotFound)
+
 app.use(express.static(clientDirectory))
 
 app.use((request, response, next) => {
@@ -30,6 +35,8 @@ app.use((request, response, next) => {
 
 	response.sendFile(path.join(clientDirectory, 'index.html'))
 })
+
+app.use(errorHandler)
 
 app.listen(port, () => {
 	console.log(`Server is running at http://localhost:${port}`)

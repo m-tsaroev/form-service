@@ -6,9 +6,11 @@ import Database from 'better-sqlite3'
 
 const currentDirectory = path.dirname(fileURLToPath(import.meta.url))
 const dataDirectory = path.resolve(currentDirectory, '../../../data')
-const databasePath = path.join(dataDirectory, 'app.db')
+const databasePath = process.env.DATABASE_PATH
+	? path.resolve(process.env.DATABASE_PATH)
+	: path.join(dataDirectory, 'app.db')
 
-fs.mkdirSync(dataDirectory, { recursive: true })
+fs.mkdirSync(path.dirname(databasePath), { recursive: true })
 
 const database = new Database(databasePath)
 
