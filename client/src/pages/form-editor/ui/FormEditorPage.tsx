@@ -35,6 +35,8 @@ const FormEditorPage = () => {
 				<FormBuilderHeader
 					title={form.title}
 					description='Настройте поля и опубликуйте форму'
+					formId={form.id}
+					status={form.status}
 				/>
 
 				<FormBuilder form={form} />

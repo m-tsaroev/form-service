@@ -1,13 +1,14 @@
+import { Button } from '@shared/ui'
 import { ArrowLeft } from 'lucide-react'
 import { useNavigate } from 'react-router'
 
-import { Button } from '@shared/ui'
+import { PublishFormButton } from '@/features/publish-form'
 
 import styles from './FormBuilderHeader.module.scss'
 import type { FormBuilderHeaderProps } from './FormBuilderHeader.types'
 
 const FormBuilderHeader = (props: FormBuilderHeaderProps) => {
-	const { description, title } = props
+	const { description, formId, status, title } = props
 	const navigate = useNavigate()
 
 	return (
@@ -23,9 +24,18 @@ const FormBuilderHeader = (props: FormBuilderHeaderProps) => {
 				Назад
 			</Button>
 
-			<div className={styles.content}>
-				<h1 className={styles.title}>{title}</h1>
-				<p className={styles.description}>{description}</p>
+			<div className={styles.main}>
+				<div className={styles.content}>
+					<h1 className={styles.title}>{title}</h1>
+					<p className={styles.description}>{description}</p>
+				</div>
+
+				{formId !== undefined && status !== undefined && (
+					<PublishFormButton
+						formId={formId}
+						isPublished={status === 'published'}
+					/>
+				)}
 			</div>
 		</header>
 	)

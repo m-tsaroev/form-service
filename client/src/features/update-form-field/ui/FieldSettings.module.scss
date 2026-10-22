@@ -153,14 +153,16 @@
 	gap: 10px;
 }
 
-.optionsHeading {
-	display: flex;
-	align-items: center;
-	gap: 8px;
+.optionsSection {
+	width: 100%;
 }
 
 .optionsHeading {
+	display: flex;
+	width: 100%;
+	align-items: center;
 	justify-content: space-between;
+	gap: 8px;
 	font-size: 13px;
 }
 

@@ -24,6 +24,14 @@
 	gap: 8px;
 }
 
+.main {
+	display: flex;
+	width: 100%;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 24px;
+}
+
 .title {
 	margin: 0;
 	color: var(--text-primary);
@@ -35,4 +43,10 @@
 .description {
 	color: var(--text-secondary);
 	font-size: fluid(18, 16);
+}
+
+@include mobile {
+	.main {
+		flex-direction: column;
+	}
 }
