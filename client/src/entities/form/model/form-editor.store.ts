@@ -12,6 +12,7 @@ type FormEditorOperation = {
 type FormEditorState = {
 	selectedField: FormField | null
 	dirtyFieldIds: ReadonlySet<number>
+	fieldDrafts: ReadonlyMap<number, FormField>
 	pendingOperation: FormEditorOperation | null
 	selectField: (field: FormField | null) => void
 	updateSelectedField: (field: FormField) => void
@@ -24,14 +25,24 @@ type FormEditorState = {
 const useFormEditorStore = create<FormEditorState>(set => ({
 	selectedField: null,
 	dirtyFieldIds: new Set<number>(),
+	fieldDrafts: new Map<number, FormField>(),
 	pendingOperation: null,
 
-	selectField: field => set({ selectedField: field }),
-	updateSelectedField: field =>
+	selectField: field =>
 		set(state => ({
-			selectedField: field,
-			dirtyFieldIds: new Set(state.dirtyFieldIds).add(field.id)
+			selectedField: field ? (state.fieldDrafts.get(field.id) ?? field) : null
 		})),
+	updateSelectedField: field =>
+		set(state => {
+			const fieldDrafts = new Map(state.fieldDrafts)
+			fieldDrafts.set(field.id, field)
+
+			return {
+				selectedField: field,
+				dirtyFieldIds: new Set(state.dirtyFieldIds).add(field.id),
+				fieldDrafts
+			}
+		}),
 
 	markFieldDirty: fieldId =>
 		set(state => ({
@@ -41,10 +52,13 @@ const useFormEditorStore = create<FormEditorState>(set => ({
 	markFieldSaved: fieldId =>
 		set(state => {
 			const dirtyFieldIds = new Set(state.dirtyFieldIds)
+			const fieldDrafts = new Map(state.fieldDrafts)
 			dirtyFieldIds.delete(fieldId)
-			return { dirtyFieldIds }
+			fieldDrafts.delete(fieldId)
+
+			return { dirtyFieldIds, fieldDrafts }
 		}),
-    
+
 	startOperation: operation => set({ pendingOperation: operation }),
 	finishOperation: () => set({ pendingOperation: null })
 }))

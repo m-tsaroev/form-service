@@ -1,10 +1,9 @@
+import { Input, Textarea } from '@shared/ui'
 import clsx from 'clsx'
 import { ChevronDown, GripVertical } from 'lucide-react'
 
 import type { FormField } from '@/entities/form'
 import { DeleteFormFieldButton } from '@/features/delete-form-field'
-
-import { Input, Textarea } from '@shared/ui'
 
 import styles from './FormFieldPreview.module.scss'
 import type { FormFieldPreviewProps } from './FormFieldPreview.types'
@@ -40,7 +39,9 @@ const FieldControl = (props: { field: FormField }) => {
 		return (
 			<Input
 				className={styles.input}
-				placeholder={field.config.placeholder ?? DEFAULT_PLACEHOLDERS[field.type]}
+				placeholder={
+					field.config.placeholder ?? DEFAULT_PLACEHOLDERS[field.type]
+				}
 				readOnly
 				tabIndex={-1}
 			/>
@@ -95,10 +96,12 @@ const FormFieldPreview = (props: FormFieldPreviewProps) => {
 	return (
 		<article
 			className={clsx(styles.field, isSelected && styles.isSelected)}
+			data-form-field-id={field.id}
 			aria-disabled={isDisabled}
 		>
 			<button
 				className={styles.selectButton}
+				data-form-field-select
 				type='button'
 				aria-label={`Редактировать поле «${field.label}»`}
 				aria-pressed={isSelected}

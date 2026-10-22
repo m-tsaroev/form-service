@@ -10,10 +10,7 @@ import {
 
 import { createFormField } from '../api/createFormField'
 
-import type {
-	CreateFormFieldBody,
-	FormFieldType
-} from './addFormField.types'
+import type { CreateFormFieldBody, FormFieldType } from './addFormField.types'
 
 const FIELD_LABELS: Record<FormFieldType, string> = {
 	text: 'Текстовое поле',
@@ -48,11 +45,16 @@ const addFieldToTree = (tree: FormTree, field: FormField): FormTree => ({
 	)
 })
 
-const useAddFormField = (formId: number) => {
+const useAddFormField = (
+	formId: number,
+	onFieldAdded?: (fieldId: number) => void
+) => {
 	const queryClient = useQueryClient()
+
 	const finishOperation = useFormEditorStore(state => state.finishOperation)
 	const selectField = useFormEditorStore(state => state.selectField)
 	const startOperation = useFormEditorStore(state => state.startOperation)
+
 	const mutation = useMutation<FormField, ApiError, FormFieldType>({
 		mutationFn: type => createFormField(formId, getCreateBody(type)),
 		onMutate: () => {
@@ -64,6 +66,7 @@ const useAddFormField = (formId: number) => {
 				current => (current ? addFieldToTree(current, field) : current)
 			)
 			selectField(field)
+			onFieldAdded?.(field.id)
 		},
 		onSettled: () => {
 			finishOperation()

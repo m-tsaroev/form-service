@@ -1,6 +1,9 @@
 .grid {
 	display: grid;
-	grid-template-columns: minmax(250px, 292px) minmax(0, 1fr);
+	grid-template-columns: minmax(250px, 292px) minmax(0, 1fr) minmax(
+			300px,
+			340px
+		);
 	align-items: start;
 	gap: 12px;
 	transition: opacity var(--duration);

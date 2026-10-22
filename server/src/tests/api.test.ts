@@ -14,6 +14,10 @@ const formSchema = z.object({
 })
 
 const fieldSchema = z.object({ id: z.number() })
+const updatedFieldSchema = fieldSchema.extend({
+	label: z.string(),
+	config: z.object({ placeholder: z.string().optional() })
+})
 const formTreeSchema = z.object({
 	pages: z.array(z.object({ fields: z.array(fieldSchema) }))
 })
@@ -80,7 +84,7 @@ test('form submission API persists only valid submissions', async context => {
 			assert.equal(response.status, 404)
 		})
 
-		await context.test('deletes a field from a draft form', async () => {
+		await context.test('updates and deletes a field from a draft form', async () => {
 			const created = await requestJson(
 				baseUrl,
 				`/api/forms/${formId}/fields`,
@@ -95,6 +99,20 @@ test('form submission API persists only valid submissions', async context => {
 			)
 			assert.equal(created.status, 201)
 			const fieldId = fieldSchema.parse(created.body).id
+
+			const updated = await requestJson(baseUrl, `/api/fields/${fieldId}`, {
+				method: 'PATCH',
+				body: JSON.stringify({
+					label: 'Updated field',
+					config: { placeholder: 'Updated placeholder' }
+				})
+			})
+			assert.equal(updated.status, 200)
+			assert.deepEqual(updatedFieldSchema.parse(updated.body), {
+				id: fieldId,
+				label: 'Updated field',
+				config: { placeholder: 'Updated placeholder' }
+			})
 
 			const removed = await fetch(`${baseUrl}/api/fields/${fieldId}`, {
 				method: 'DELETE'

@@ -1,3 +1,4 @@
+import { Button } from '@shared/ui'
 import {
 	AlignLeft,
 	Circle,
@@ -8,8 +9,6 @@ import {
 } from 'lucide-react'
 
 import { useFormEditorStore } from '@/entities/form'
-
-import { Button } from '@shared/ui'
 
 import type { FormFieldType } from '../model/addFormField.types'
 import { useAddFormField } from '../model/useAddFormField'
@@ -31,8 +30,11 @@ const FIELD_TYPES = [
 }>
 
 const AddFormField = (props: AddFormFieldProps) => {
-	const { formId } = props
-	const { addField, addingType, error, isPending } = useAddFormField(formId)
+	const { formId, onFieldAdded } = props
+	const { addField, addingType, error, isPending } = useAddFormField(
+		formId,
+		onFieldAdded
+	)
 	const isEditorPending = useFormEditorStore(
 		state => state.pendingOperation !== null
 	)
