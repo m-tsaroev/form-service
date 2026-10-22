@@ -1,5 +1,5 @@
-import { Button, useToast } from '@shared/ui'
-import { CircleCheck, Send } from 'lucide-react'
+import { Button, toast } from '@shared/ui'
+import { EyeOff, Send } from 'lucide-react'
 
 import { ROUTES } from '@/shared/config'
 
@@ -15,11 +15,17 @@ const PublishFormButton = (props: PublishFormButtonProps) => {
 	const isEditorPending = useFormEditorStore(
 		state => state.pendingOperation !== null
 	)
-	const { showToast } = useToast()
-	const { error, isPending, publish } = usePublishForm(formId)
-	const handlePublish = () => {
-		publish(undefined, {
+	const { error, isPending, updatePublication } = usePublishForm(formId)
+	const handlePublicationChange = () => {
+		updatePublication(isPublished ? 'unpublish' : 'publish', {
 			onSuccess: form => {
+				if (form.status === 'draft') {
+					toast.info('Форма снята с публикации', {
+						description: 'Публичная ссылка временно недоступна.'
+					})
+					return
+				}
+
 				if (!form.slug) {
 					return
 				}
@@ -27,8 +33,7 @@ const PublishFormButton = (props: PublishFormButtonProps) => {
 				const publicPath = ROUTES.PUBLIC_FORM(form.slug)
 				const publicUrl = new URL(publicPath, window.location.origin).toString()
 
-				showToast({
-					title: 'Форма опубликована',
+				toast.success('Форма опубликована', {
 					description: publicUrl,
 					action: (
 						<a className={styles.toastAction} href={publicPath}>
@@ -45,21 +50,24 @@ const PublishFormButton = (props: PublishFormButtonProps) => {
 			<Button
 				className={styles.button}
 				type='button'
-				disabled={isPublished || isEditorPending}
+				variant={isPublished ? 'secondary' : 'primary'}
+				disabled={isEditorPending}
 				isLoading={isPending}
-				onClick={handlePublish}
+				onClick={handlePublicationChange}
 			>
 				{isPublished ? (
-					<CircleCheck size={18} aria-hidden='true' />
+					<EyeOff size={18} aria-hidden='true' />
 				) : (
 					<Send size={18} aria-hidden='true' />
 				)}
-				{isPublished ? 'Опубликовано' : 'Опубликовать'}
+				{isPublished ? 'Снять с публикации' : 'Опубликовать'}
 			</Button>
 
 			{error && (
 				<p className={styles.error} role='alert'>
-					Не удалось опубликовать форму. Проверьте заполнение полей.
+					{isPublished
+						? 'Не удалось снять форму с публикации.'
+						: 'Не удалось опубликовать форму. Проверьте заполнение полей.'}
 				</p>
 			)}
 		</div>

@@ -35,6 +35,11 @@ formsRouter.post(
 	validate('params', formIdParamsSchema),
 	formsController.publish
 )
+formsRouter.post(
+	'/:id/unpublish',
+	validate('params', formIdParamsSchema),
+	formsController.unpublish
+)
 formsRouter.get(
 	'/:id/submissions',
 	validate('params', formIdParamsSchema),

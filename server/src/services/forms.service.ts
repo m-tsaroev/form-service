@@ -137,7 +137,22 @@ const publish = (id: number) => {
 		)
 	}
 
-	formsRepository.publish(id, createSlug(form.title))
+	formsRepository.publish(id, form.slug ?? createSlug(form.title))
+	return getById(id)
+}
+
+const unpublish = (id: number) => {
+	const form = formsRepository.findById(id)
+
+	if (!form) {
+		throw new HttpError(404, 'FORM_NOT_FOUND', 'Form not found')
+	}
+
+	if (form.status === 'draft') {
+		return buildFormTree(form)
+	}
+
+	formsRepository.unpublish(id)
 	return getById(id)
 }
 
@@ -159,5 +174,6 @@ export const formsService = {
 	getById,
 	getPublicBySlug,
 	publish,
+	unpublish,
 	update
 }

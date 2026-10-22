@@ -205,6 +205,19 @@ const publish = (id: number, slug: string) => {
 	return result.changes > 0
 }
 
+const unpublish = (id: number) => {
+	const result = database
+		.prepare(
+			`UPDATE forms
+			 SET status = 'draft',
+			     updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
+			 WHERE id = ?`
+		)
+		.run(id)
+
+	return result.changes > 0
+}
+
 export const formsRepository = {
 	create,
 	findAll,
@@ -214,5 +227,6 @@ export const formsRepository = {
 	findPublishedBySlug,
 	publish,
 	slugExists,
+	unpublish,
 	update
 }

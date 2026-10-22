@@ -10,6 +10,9 @@ export const API_ROUTES = {
 	FORM_PUBLISH(id: string | number) {
 		return `/forms/${id}/publish`
 	},
+	FORM_UNPUBLISH(id: string | number) {
+		return `/forms/${id}/unpublish`
+	},
 	FORM_SUBMISSIONS(id: string | number) {
 		return `/forms/${id}/submissions`
 	},

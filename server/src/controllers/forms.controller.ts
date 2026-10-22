@@ -27,6 +27,10 @@ const publish: RequestHandler = (request, response) => {
 	response.json(formsService.publish(Number(request.params.id)))
 }
 
+const unpublish: RequestHandler = (request, response) => {
+	response.json(formsService.unpublish(Number(request.params.id)))
+}
+
 const getPublicBySlug: RequestHandler = (request, response) => {
 	response.json(formsService.getPublicBySlug(String(request.params.slug)))
 }
@@ -37,5 +41,6 @@ export const formsController = {
 	getById,
 	getPublicBySlug,
 	publish,
+	unpublish,
 	update
 }

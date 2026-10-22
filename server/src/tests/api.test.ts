@@ -10,7 +10,8 @@ import { z } from 'zod'
 const formSchema = z.object({
 	id: z.number(),
 	title: z.string(),
-	slug: z.string().nullable()
+	slug: z.string().nullable(),
+	status: z.enum(['draft', 'published'])
 })
 const formListItemSchema = formSchema.extend({ submissionCount: z.number() })
 
@@ -211,6 +212,37 @@ test('form submission API persists only valid submissions', async context => {
 			slug = formSchema.parse(published.body).slug ?? ''
 			assert.notEqual(slug, '')
 		})
+
+		await context.test(
+			'unpublishes the form and preserves its public slug',
+			async () => {
+				const unpublished = await requestJson(
+					baseUrl,
+					`/api/forms/${formId}/unpublish`,
+					{ method: 'POST' }
+				)
+				assert.equal(unpublished.status, 200)
+				const draft = formSchema.parse(unpublished.body)
+				assert.equal(draft.status, 'draft')
+				assert.equal(draft.slug, slug)
+
+				const unavailable = await requestJson(
+					baseUrl,
+					`/api/public/forms/${slug}`
+				)
+				assert.equal(unavailable.status, 404)
+
+				const republished = await requestJson(
+					baseUrl,
+					`/api/forms/${formId}/publish`,
+					{ method: 'POST' }
+				)
+				assert.equal(republished.status, 200)
+				const published = formSchema.parse(republished.body)
+				assert.equal(published.status, 'published')
+				assert.equal(published.slug, slug)
+			}
+		)
 
 		await context.test(
 			'invalid submission leaves no partial records',

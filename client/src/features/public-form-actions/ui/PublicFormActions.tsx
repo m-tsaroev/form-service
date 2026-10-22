@@ -1,9 +1,9 @@
 import {
 	Button,
+	toast,
 	Tooltip,
 	TooltipContent,
-	TooltipTrigger,
-	useToast
+	TooltipTrigger
 } from '@shared/ui'
 import { Copy, ExternalLink } from 'lucide-react'
 import { useNavigate } from 'react-router'
@@ -16,20 +16,17 @@ import type { PublicFormActionsProps } from './PublicFormActions.types'
 const PublicFormActions = (props: PublicFormActionsProps) => {
 	const { slug } = props
 	const navigate = useNavigate()
-	const { showToast } = useToast()
 	const publicPath = ROUTES.PUBLIC_FORM(slug)
 	const publicUrl = new URL(publicPath, window.location.origin).toString()
 
 	const handleCopy = async () => {
 		try {
 			await navigator.clipboard.writeText(publicUrl)
-			showToast({
-				title: 'Ссылка скопирована',
+			toast.success('Ссылка скопирована', {
 				description: publicUrl
 			})
 		} catch {
-			showToast({
-				title: 'Не удалось скопировать ссылку',
+			toast.error('Не удалось скопировать ссылку', {
 				description: 'Скопируйте адрес опубликованной формы вручную.'
 			})
 		}

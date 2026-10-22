@@ -34,6 +34,7 @@
 		"react": "^19.2.0",
 		"react-dom": "^19.2.0",
 		"react-hook-form": "^7.90.0",
+		"react-hot-toast": "^2.6.1",
 		"react-router-dom": "^7.9.4",
 		"sass": "^1.106.0",
 		"zod": "^4.1.12",

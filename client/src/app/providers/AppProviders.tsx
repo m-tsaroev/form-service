@@ -16,7 +16,8 @@ const AppProviders = (props: AppProvidersProps) => {
 		<QueryProvider>
 			<ThemeProvider>
 				<TooltipProvider delayDuration={350}>
-					<ToastProvider>{children}</ToastProvider>
+					{children}
+					<ToastProvider />
 				</TooltipProvider>
 			</ThemeProvider>
 		</QueryProvider>

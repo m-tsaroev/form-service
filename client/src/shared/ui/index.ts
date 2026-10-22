@@ -5,8 +5,13 @@ export { Input } from './input/Input'
 export { Spinner } from './spinner/Spinner'
 export { Textarea } from './textarea/Textarea'
 export { ThemeToggle } from './theme-toggle/ThemeToggle'
-export { useToast } from './toast/Toast.context'
-export { ToastProvider } from './toast/Toast'
+export { toast, ToastProvider } from './toast'
+export type {
+	CustomToastOptions,
+	ToastMessage,
+	ToastOptions,
+	ToastVariant
+} from './toast'
 export {
 	Tooltip,
 	TooltipContent,
