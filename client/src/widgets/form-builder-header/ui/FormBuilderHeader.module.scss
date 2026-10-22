@@ -1,0 +1,38 @@
+.header {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: fluid(24, 18);
+}
+
+.backButton {
+	min-height: auto;
+	padding: 0;
+	color: var(--text-secondary);
+	font-size: 14px;
+	transition: color var(--duration);
+
+	@include hover {
+		background-color: transparent;
+		color: var(--text-primary);
+	}
+}
+
+.content {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.title {
+	margin: 0;
+	color: var(--text-primary);
+	font-size: fluid(42, 30);
+	font-weight: 700;
+	line-height: 1.1;
+}
+
+.description {
+	color: var(--text-secondary);
+	font-size: fluid(18, 16);
+}
