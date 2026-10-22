@@ -73,6 +73,14 @@
 9. Для асинхронных операций предусматривай loading, error и empty states.
 10. Учитывай доступность: семантический HTML, label, keyboard navigation и корректные сообщения об ошибках.
 11. Анимации используй сдержанно и только когда они улучшают UX. Если Framer Motion уже установлен, предпочитай его для сложных анимаций.
+12. Для предметных форм выноси настройку React Hook Form в специализированный
+    кастомный хук вида `useCreateFormForm`, `useUpdateFieldForm` и т. п. Такой
+    хук должен объединять `useForm`, Zod resolver, начальные значения и
+    submit-сценарий, а UI-компонент формы должен оставаться преимущественно
+    разметкой.
+13. Не смешивай form-hook с TanStack Query mutation-hook: например,
+    `useCreateFormForm` может использовать `useCreateForm`, но сам
+    `useCreateForm` отвечает только за mutation и работу с query cache.
 
 ## 6. SCSS
 

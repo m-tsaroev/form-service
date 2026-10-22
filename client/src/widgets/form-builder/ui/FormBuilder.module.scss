@@ -1,0 +1,25 @@
+.grid {
+	display: grid;
+	grid-template-columns: minmax(250px, 292px) minmax(0, 1fr);
+	gap: 12px;
+}
+
+.sidebar {
+	min-width: 0;
+}
+
+@include laptop {
+	.grid {
+		grid-template-columns: 1fr;
+	}
+
+	.sidebar {
+		max-width: 420px;
+	}
+}
+
+@include mobile {
+	.sidebar {
+		max-width: none;
+	}
+}
