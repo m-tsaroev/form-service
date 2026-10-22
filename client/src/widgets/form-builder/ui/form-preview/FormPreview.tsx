@@ -37,6 +37,7 @@ const FormPreview = (props: FormPreviewProps) => {
 						{fields.map(field => (
 							<FormFieldPreview
 								field={field}
+								formId={form.id}
 								isDisabled={isDisabled}
 								isDirty={dirtyFieldIds.has(field.id)}
 								isSelected={field.id === selectedFieldId}

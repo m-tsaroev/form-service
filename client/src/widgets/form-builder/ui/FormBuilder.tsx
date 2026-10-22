@@ -17,7 +17,7 @@ const FormBuilder = (props: FormBuilderProps) => {
 	const pendingOperation = useFormEditorStore(state => state.pendingOperation)
 	const selectField = useFormEditorStore(state => state.selectField)
 	const selectedField = useFormEditorStore(state => state.selectedField)
-  
+
 	const confirmedSelectedField = fields.find(
 		field => field.id === selectedField?.id
 	)

@@ -1,23 +1,19 @@
 .field {
 	position: relative;
-	display: flex;
+	display: grid;
+	grid-template-columns: 20px minmax(0, 1fr) auto;
+	grid-template-rows: auto auto;
 	min-width: 0;
 	padding: 16px;
 	border: var(--border);
 	border-radius: var(--radius-md);
 	background-color: var(--surface);
-	gap: 12px;
+	column-gap: 12px;
+	row-gap: 12px;
 	transition-duration: var(--duration);
-	cursor: pointer;
 
 	@include hover {
 		border-color: var(--border-color-secondary);
-	}
-
-	&:focus-visible {
-		border-color: var(--primary-active);
-		outline: 2px solid var(--primary-soft);
-		outline-offset: 2px;
 	}
 
 	&.isSelected {
@@ -26,22 +22,41 @@
 	}
 }
 
+.selectButton {
+	position: absolute;
+	inset: 0;
+	z-index: 1;
+	border: 0;
+	border-radius: inherit;
+	background: transparent;
+	cursor: pointer;
+
+	&:focus-visible {
+		outline: 2px solid var(--primary-active);
+		outline-offset: 2px;
+	}
+
+	&:disabled {
+		cursor: wait;
+	}
+}
+
 .dragHandle {
-	flex: 0 0 auto;
+	position: relative;
+	grid-column: 1;
+	grid-row: 1;
 	margin-top: 2px;
 	color: var(--text-tertiary);
 }
 
 .content {
-	display: flex;
-	min-width: 0;
-	flex: 1;
-	flex-direction: column;
-	gap: 12px;
+	display: contents;
 }
 
 .meta {
 	display: flex;
+	grid-column: 2;
+	grid-row: 1;
 	align-items: center;
 	min-height: 24px;
 	gap: 8px;
@@ -66,9 +81,16 @@
 
 .fieldBody {
 	display: flex;
+	grid-column: 2 / -1;
+	grid-row: 2;
 	min-width: 0;
 	flex-direction: column;
 	gap: 8px;
+}
+
+.deleteControl {
+	grid-column: 3;
+	grid-row: 1;
 }
 
 .label {
@@ -140,10 +162,23 @@
 
 @include mobile {
 	.field {
+		grid-template-columns: minmax(0, 1fr) auto;
 		padding: 14px;
 	}
 
 	.dragHandle {
 		display: none;
+	}
+
+	.meta {
+		grid-column: 1;
+	}
+
+	.fieldBody {
+		grid-column: 1 / -1;
+	}
+
+	.deleteControl {
+		grid-column: 2;
 	}
 }

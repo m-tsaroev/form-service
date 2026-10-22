@@ -14,6 +14,9 @@ const formSchema = z.object({
 })
 
 const fieldSchema = z.object({ id: z.number() })
+const formTreeSchema = z.object({
+	pages: z.array(z.object({ fields: z.array(fieldSchema) }))
+})
 const submissionSchema = z.object({
 	id: z.number(),
 	answers: z.array(z.object({ fieldId: z.number(), value: z.unknown() }))
@@ -75,6 +78,37 @@ test('form submission API persists only valid submissions', async context => {
 				'/api/public/forms/not-published'
 			)
 			assert.equal(response.status, 404)
+		})
+
+		await context.test('deletes a field from a draft form', async () => {
+			const created = await requestJson(
+				baseUrl,
+				`/api/forms/${formId}/fields`,
+				{
+					method: 'POST',
+					body: JSON.stringify({
+						type: 'text',
+						label: 'Temporary field',
+						config: {}
+					})
+				}
+			)
+			assert.equal(created.status, 201)
+			const fieldId = fieldSchema.parse(created.body).id
+
+			const removed = await fetch(`${baseUrl}/api/fields/${fieldId}`, {
+				method: 'DELETE'
+			})
+			assert.equal(removed.status, 204)
+
+			const read = await requestJson(baseUrl, `/api/forms/${formId}`)
+			const form = formTreeSchema.parse(read.body)
+			assert.equal(
+				form.pages.some(page =>
+					page.fields.some(field => field.id === fieldId)
+				),
+				false
+			)
 		})
 
 		await context.test('prepares and publishes the form', async () => {

@@ -1,8 +1,8 @@
 import clsx from 'clsx'
 import { ChevronDown, GripVertical } from 'lucide-react'
-import type { KeyboardEvent } from 'react'
 
 import type { FormField } from '@/entities/form'
+import { DeleteFormFieldButton } from '@/features/delete-form-field'
 
 import { Input, Textarea } from '@shared/ui'
 
@@ -90,25 +90,22 @@ const FieldControl = (props: { field: FormField }) => {
 }
 
 const FormFieldPreview = (props: FormFieldPreviewProps) => {
-	const { field, isDisabled, isDirty, isSelected, onSelect } = props
-
-	const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
-		if (!isDisabled && (event.key === 'Enter' || event.key === ' ')) {
-			event.preventDefault()
-			onSelect(field.id)
-		}
-	}
+	const { field, formId, isDisabled, isDirty, isSelected, onSelect } = props
 
 	return (
-		<div
+		<article
 			className={clsx(styles.field, isSelected && styles.isSelected)}
-			role='button'
-			tabIndex={isDisabled ? -1 : 0}
 			aria-disabled={isDisabled}
-			aria-pressed={isSelected}
-			onClick={() => !isDisabled && onSelect(field.id)}
-			onKeyDown={handleKeyDown}
 		>
+			<button
+				className={styles.selectButton}
+				type='button'
+				aria-label={`Редактировать поле «${field.label}»`}
+				aria-pressed={isSelected}
+				disabled={isDisabled}
+				onClick={() => onSelect(field.id)}
+			/>
+
 			<GripVertical
 				className={styles.dragHandle}
 				size={20}
@@ -144,7 +141,14 @@ const FormFieldPreview = (props: FormFieldPreviewProps) => {
 					<FieldControl field={field} />
 				</div>
 			</div>
-		</div>
+
+			<DeleteFormFieldButton
+				className={styles.deleteControl}
+				fieldId={field.id}
+				fieldLabel={field.label}
+				formId={formId}
+			/>
+		</article>
 	)
 }
 

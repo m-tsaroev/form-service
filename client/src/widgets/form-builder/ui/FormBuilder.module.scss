@@ -12,7 +12,11 @@
 }
 
 .sidebar {
+	position: sticky;
+	top: 16px;
 	min-width: 0;
+	max-height: calc(100vh - 32px);
+	overflow-y: auto;
 }
 
 @include laptop {
@@ -21,8 +25,11 @@
 	}
 
 	.sidebar {
+		position: static;
 		width: 100%;
 		max-width: 420px;
+		max-height: none;
+		overflow-y: visible;
 	}
 }
 

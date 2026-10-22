@@ -81,6 +81,8 @@
 13. Не смешивай form-hook с TanStack Query mutation-hook: например,
     `useCreateFormForm` может использовать `useCreateForm`, но сам
     `useCreateForm` отвечает только за mutation и работу с query cache.
+14. Для составных и условных значений `className` используй `clsx`. Не собирай
+    CSS-классы через шаблонные строки с обратными кавычками и `${}`.
 
 ## 6. SCSS
 
