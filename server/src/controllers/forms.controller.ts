@@ -6,8 +6,13 @@ const create: RequestHandler = (request, response) => {
 	response.status(201).json(formsService.create(request.body))
 }
 
-const getAll: RequestHandler = (_request, response) => {
-	response.json(formsService.getAll())
+const getAll: RequestHandler = (request, response) => {
+	const search =
+		typeof request.query.search === 'string'
+			? request.query.search
+			: undefined
+
+	response.json(formsService.getAll(search))
 }
 
 const getById: RequestHandler = (request, response) => {

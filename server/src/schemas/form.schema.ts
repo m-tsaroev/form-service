@@ -8,6 +8,11 @@ const formIdParamsSchema = z.object({
 const formSlugParamsSchema = z.object({
 	slug: z.string().trim().min(1).max(100)
 })
+const formsQuerySchema = z
+	.object({
+		search: z.string().trim().max(200).optional()
+	})
+	.strict()
 
 const createFormSchema = z
 	.object({
@@ -33,6 +38,7 @@ export {
 	createFormSchema,
 	formIdParamsSchema,
 	formSlugParamsSchema,
+	formsQuerySchema,
 	updateFormSchema,
 	type CreateFormInput,
 	type UpdateFormInput

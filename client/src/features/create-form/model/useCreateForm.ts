@@ -14,7 +14,7 @@ const useCreateForm = () => {
 		mutationFn: createForm,
 		onSuccess: () => {
 			void queryClient.invalidateQueries({
-				queryKey: FORM_QUERY_KEYS.list()
+				queryKey: FORM_QUERY_KEYS.lists()
 			})
 		}
 	})

@@ -1,1 +1,1 @@
-export { useOutside } from './hooks/use-outside'
+export { useDebounce } from './hooks/use-debounce'

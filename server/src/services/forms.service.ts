@@ -151,9 +151,11 @@ const getPublicBySlug = (slug: string) => {
 	return buildFormTree(form)
 }
 
+const getAll = (search?: string) => formsRepository.findAll(search)
+
 export const formsService = {
 	create,
-	getAll: formsRepository.findAll,
+	getAll,
 	getById,
 	getPublicBySlug,
 	publish,

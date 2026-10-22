@@ -91,8 +91,12 @@ type Form = {
 	updatedAt: string
 }
 
+type FormListItem = Form & {
+	submissionCount: number
+}
+
 type FormTree = Form & {
 	pages: FormPage[]
 }
 
-export type { Form, FormField, FormPage, FormStatus, FormTree }
+export type { Form, FormField, FormListItem, FormPage, FormStatus, FormTree }

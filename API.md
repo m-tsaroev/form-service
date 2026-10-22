@@ -30,6 +30,10 @@ type Form = {
 	updatedAt: string
 }
 
+type FormListItem = Form & {
+	submissionCount: number
+}
+
 type FormPage = {
 	id: number
 	formId: number
@@ -177,6 +181,13 @@ POST /api/forms
 GET /api/forms
 ```
 
+Необязательный query-параметр `search` фильтрует формы по вхождению строки в
+название. Максимальная длина — 200 символов.
+
+```http
+GET /api/forms?search=анкета
+```
+
 Ответ `200`:
 
 ```json
@@ -187,13 +198,15 @@ GET /api/forms
 		"description": "Заполните данные для участия",
 		"slug": null,
 		"status": "draft",
+		"submissionCount": 0,
 		"createdAt": "2026-10-22T12:00:00.000Z",
 		"updatedAt": "2026-10-22T12:00:00.000Z"
 	}
 ]
 ```
 
-Список не содержит `pages` и `fields`.
+Список не содержит `pages` и `fields`. `submissionCount` содержит количество
+отправок формы и рассчитывается сервером.
 
 ### Получение формы
 

@@ -13,6 +13,10 @@ type Form = {
 	updatedAt: string
 }
 
+type FormListItem = Form & {
+	submissionCount: number
+}
+
 type Page = {
 	id: number
 	formId: number
@@ -40,4 +44,4 @@ type Answer = {
 	value: AnswerValue
 }
 
-export type { Answer, Field, Form, FormStatus, Page, Submission }
+export type { Answer, Field, Form, FormListItem, FormStatus, Page, Submission }

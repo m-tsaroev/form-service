@@ -1,6 +1,7 @@
 export { FORM_QUERY_KEYS } from './model/form.query-keys'
 export { useFormEditorStore } from './model/form-editor.store'
 export { useFormQuery } from './model/useFormQuery'
+export { useFormsQuery } from './model/useFormsQuery'
 export { usePublicFormQuery } from './model/usePublicFormQuery'
 export type {
 	FormEditorOperation,
@@ -9,6 +10,7 @@ export type {
 export type {
 	Form,
 	FormField,
+	FormListItem,
 	FormPage,
 	FormStatus,
 	FormTree

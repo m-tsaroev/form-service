@@ -1,5 +1,5 @@
 import { database } from '@server/db/database.js'
-import type { Field, Form, Page } from '@server/domain/models.js'
+import type { Field, Form, FormListItem, Page } from '@server/domain/models.js'
 import { fieldDefinitionSchema } from '@server/schemas/field.schema.js'
 import type {
 	CreateFormInput,
@@ -14,6 +14,10 @@ type FormRow = {
 	status: Form['status']
 	created_at: string
 	updated_at: string
+}
+
+type FormListItemRow = FormRow & {
+	submission_count: number
 }
 
 type PageRow = {
@@ -43,6 +47,11 @@ const mapForm = (row: FormRow): Form => ({
 	status: row.status,
 	createdAt: row.created_at,
 	updatedAt: row.updated_at
+})
+
+const mapFormListItem = (row: FormListItemRow): FormListItem => ({
+	...mapForm(row),
+	submissionCount: row.submission_count
 })
 
 const mapPage = (row: PageRow): Page => ({
@@ -83,13 +92,34 @@ const create = database.transaction((input: CreateFormInput) => {
 	return formId
 })
 
-const findAll = () =>
-	database
-		.prepare<[], FormRow>(
-			'SELECT * FROM forms ORDER BY created_at DESC, id DESC'
+const escapeLikePattern = (value: string) =>
+	value.replaceAll('\\', '\\\\').replaceAll('%', '\\%').replaceAll('_', '\\_')
+
+const findAll = (search?: string) => {
+	const select = `SELECT forms.*, COUNT(submissions.id) AS submission_count
+		FROM forms
+		LEFT JOIN submissions ON submissions.form_id = forms.id`
+	const groupAndOrder = `GROUP BY forms.id
+		ORDER BY forms.created_at DESC, forms.id DESC`
+
+	if (!search) {
+		return database
+			.prepare<[], FormListItemRow>(`${select} ${groupAndOrder}`)
+			.all()
+			.map(mapFormListItem)
+	}
+
+	const pattern = `%${escapeLikePattern(search)}%`
+
+	return database
+		.prepare<[string], FormListItemRow>(
+			`${select}
+			 WHERE forms.title LIKE ? ESCAPE '\\'
+			 ${groupAndOrder}`
 		)
-		.all()
-		.map(mapForm)
+		.all(pattern)
+		.map(mapFormListItem)
+}
 
 const findById = (id: number) => {
 	const row = database

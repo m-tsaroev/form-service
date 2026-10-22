@@ -11,13 +11,14 @@ import {
 import {
 	createFormSchema,
 	formIdParamsSchema,
+	formsQuerySchema,
 	updateFormSchema
 } from '@server/schemas/form.schema.js'
 import { submissionParamsSchema } from '@server/schemas/submission.schema.js'
 
 const formsRouter = Router()
 
-formsRouter.get('/', formsController.getAll)
+formsRouter.get('/', validate('query', formsQuerySchema), formsController.getAll)
 formsRouter.post(
 	'/',
 	validate('body', createFormSchema),

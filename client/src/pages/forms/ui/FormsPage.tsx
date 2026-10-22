@@ -1,5 +1,7 @@
+import { FormsList } from '@/widgets/forms-list'
+
 const FormsPage = () => {
-	return <div></div>
+	return <FormsList />
 }
 
 export { FormsPage }

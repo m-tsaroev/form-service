@@ -12,6 +12,7 @@ const formSchema = z.object({
 	title: z.string(),
 	slug: z.string().nullable()
 })
+const formListItemSchema = formSchema.extend({ submissionCount: z.number() })
 
 const fieldSchema = z.object({ id: z.number() })
 const updatedFieldSchema = fieldSchema.extend({
@@ -74,6 +75,43 @@ test('form submission API persists only valid submissions', async context => {
 			const read = await requestJson(baseUrl, `/api/forms/${formId}`)
 			assert.equal(read.status, 200)
 			assert.equal(formSchema.parse(read.body).title, 'Application')
+
+			const list = await requestJson(baseUrl, '/api/forms')
+			assert.equal(list.status, 200)
+			assert.equal(
+				z.array(formListItemSchema).parse(list.body)[0]?.submissionCount,
+				0
+			)
+
+			const matchingList = await requestJson(
+				baseUrl,
+				'/api/forms?search=app'
+			)
+			assert.equal(
+				z.array(formListItemSchema).parse(matchingList.body).length,
+				1
+			)
+
+			const emptyList = await requestJson(
+				baseUrl,
+				'/api/forms?search=missing'
+			)
+			assert.equal(z.array(formListItemSchema).parse(emptyList.body).length, 0)
+
+			const escapedWildcard = await requestJson(
+				baseUrl,
+				'/api/forms?search=%25'
+			)
+			assert.equal(
+				z.array(formListItemSchema).parse(escapedWildcard.body).length,
+				0
+			)
+
+			const invalidQuery = await requestJson(
+				baseUrl,
+				'/api/forms?unknown=value'
+			)
+			assert.equal(invalidQuery.status, 400)
 		})
 
 		await context.test('does not expose a draft publicly', async () => {
@@ -228,6 +266,12 @@ test('form submission API persists only valid submissions', async context => {
 			)
 			assert.equal(submissions.status, 200)
 			assert.equal(z.array(z.unknown()).parse(submissions.body).length, 1)
+
+			const list = await requestJson(baseUrl, '/api/forms')
+			assert.equal(
+				z.array(formListItemSchema).parse(list.body)[0]?.submissionCount,
+				1
+			)
 		})
 	} finally {
 		await new Promise<void>((resolve, reject) => {
