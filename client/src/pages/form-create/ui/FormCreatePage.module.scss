@@ -1,3 +1,9 @@
 .page {
 	padding-block: fluid(40, 24);
 }
+
+.container {
+	display: flex;
+	flex-direction: column;
+	gap: fluid(32, 24);
+}

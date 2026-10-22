@@ -20,7 +20,7 @@ const FormBuilderHeader = (props: FormBuilderHeaderProps) => {
 				onClick={() => navigate(-1)}
 			>
 				<ArrowLeft size={18} aria-hidden='true' />
-				Мои формы
+				Назад
 			</Button>
 
 			<div className={styles.content}>

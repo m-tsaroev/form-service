@@ -1,0 +1,44 @@
+.wrapper {
+	display: flex;
+	justify-content: center;
+	width: 100%;
+}
+
+.form {
+	max-width: 720px;
+}
+
+.fieldContent {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	width: 100%;
+}
+
+.hint {
+	color: var(--text-tertiary);
+	font-size: 13px;
+}
+
+.submitError {
+	color: var(--danger);
+	font-size: 14px;
+}
+
+.actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 12px;
+	width: 100%;
+	padding-top: 8px;
+}
+
+@include mobile {
+	.actions {
+		flex-direction: column-reverse;
+
+		button {
+			width: 100%;
+		}
+	}
+}

@@ -1,8 +1,7 @@
 import { Theme } from '@radix-ui/themes'
-import { useLayoutEffect } from 'react'
-
 import { useThemeStore } from '@shared/theme'
 import { applyTheme } from '@shared/theme/lib/theme-dom'
+import { useLayoutEffect } from 'react'
 
 import type { ThemeProviderProps } from './ThemeProvider.types'
 
