@@ -10,9 +10,9 @@
 	--surface-hover: #f4f4f5;
 
 	/* Success */
-	--success: #1b8054;
-	--success-hover: #166846;
-	--success-soft: #f3f8f6;
+	--success: var(--primary);
+	--success-hover: var(--primary-hover);
+	--success-soft: var(--primary-soft);
 
 	/* Warning */
 	--warning: #d97706;

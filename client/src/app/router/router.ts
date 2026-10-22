@@ -7,6 +7,7 @@ import { NotFoundPage } from '@pages/not-found'
 import { PublicFormPage } from '@pages/public-form'
 import { SubmissionPage } from '@pages/submission'
 import { SubmissionsPage } from '@pages/submissions'
+import { ROUTES } from '@shared/config'
 import { createBrowserRouter, redirect } from 'react-router'
 
 import { RouteErrorBoundary } from './ui/RouteErrorBoundary'
@@ -18,10 +19,10 @@ export const router = createBrowserRouter([
 		children: [
 			{
 				index: true,
-				loader: () => redirect('/admin')
+				loader: () => redirect(ROUTES.ADMIN)
 			},
 			{
-				path: 'admin',
+				path: ROUTES.ADMIN,
 				Component: AdminLayout,
 				children: [
 					{
@@ -29,23 +30,23 @@ export const router = createBrowserRouter([
 						Component: FormsPage
 					},
 					{
-						path: 'forms/new',
+					path: ROUTES.FORM_CREATE,
 						Component: FormCreatePage
 					},
 					{
-						path: 'forms/:id',
+					path: ROUTES.FORM_ID(':id'),
 						Component: FormEditorPage
 					},
 					{
-						path: 'forms/:id/preview',
+					path: ROUTES.FORM_PREVIEW(':id'),
 						Component: FormPreviewPage
 					},
 					{
-						path: 'forms/:id/submissions',
+					path: ROUTES.SUBMISSIONS(':id'),
 						Component: SubmissionsPage
 					},
 					{
-						path: 'forms/:id/submissions/:submissionId',
+					path: ROUTES.SUBMISSION_ID(':id', ':submissionId'),
 						Component: SubmissionPage
 					}
 				]
@@ -54,13 +55,13 @@ export const router = createBrowserRouter([
 				Component: HomeLayout,
 				children: [
 					{
-						path: 'forms/:slug',
+						path: ROUTES.PUBLIC_FORM(':slug'),
 						Component: PublicFormPage
 					}
 				]
 			},
 			{
-				path: '*',
+				path: ROUTES.NOT_FOUND,
 				Component: NotFoundPage
 			}
 		]

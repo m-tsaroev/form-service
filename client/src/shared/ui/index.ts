@@ -4,6 +4,7 @@ export { Button } from './button/Button'
 export { Input } from './input/Input'
 export { Spinner } from './spinner/Spinner'
 export { Textarea } from './textarea/Textarea'
+export { ThemeToggle } from './theme-toggle/ThemeToggle'
 export { Form } from './form/ui/Form'
 export { FormSection } from './form/ui/FormSection'
 
