@@ -1,0 +1,149 @@
+.field {
+	position: relative;
+	display: flex;
+	min-width: 0;
+	padding: 16px;
+	border: var(--border);
+	border-radius: var(--radius-md);
+	background-color: var(--surface);
+	gap: 12px;
+	transition-duration: var(--duration);
+	cursor: pointer;
+
+	@include hover {
+		border-color: var(--border-color-secondary);
+	}
+
+	&:focus-visible {
+		border-color: var(--primary-active);
+		outline: 2px solid var(--primary-soft);
+		outline-offset: 2px;
+	}
+
+	&.isSelected {
+		border-color: var(--text-tertiary);
+		background-color: var(--surface-secondary);
+	}
+}
+
+.dragHandle {
+	flex: 0 0 auto;
+	margin-top: 2px;
+	color: var(--text-tertiary);
+}
+
+.content {
+	display: flex;
+	min-width: 0;
+	flex: 1;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.meta {
+	display: flex;
+	align-items: center;
+	min-height: 24px;
+	gap: 8px;
+}
+
+.typeBadge {
+	padding: 4px 10px;
+	border: var(--border);
+	border-radius: var(--radius-full);
+	background-color: var(--surface-secondary);
+	font-size: 12px;
+	line-height: 1;
+}
+
+.dirtyIndicator {
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	background-color: var(--warning);
+	box-shadow: 0 0 0 3px var(--warning-soft);
+}
+
+.fieldBody {
+	display: flex;
+	min-width: 0;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.label {
+	font-size: 14px;
+	font-weight: 600;
+	line-height: 1.4;
+}
+
+.required {
+	margin-left: 5px;
+	color: var(--danger);
+}
+
+.description,
+.noOptions {
+	color: var(--text-tertiary);
+	font-size: 13px;
+	line-height: 1.4;
+}
+
+.input,
+.textarea {
+	pointer-events: none;
+}
+
+.textarea {
+	min-height: 76px;
+	resize: none;
+}
+
+.options {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 12px 24px;
+}
+
+.option {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	color: var(--text-secondary);
+	font-size: 14px;
+}
+
+.optionMarker {
+	width: 18px;
+	height: 18px;
+	border: var(--border);
+	border-color: var(--border-color-secondary);
+	border-radius: 50%;
+	background-color: var(--surface);
+
+	&.checkboxMarker {
+		border-radius: 4px;
+	}
+}
+
+.selectPreview {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	min-height: 44px;
+	padding: 10px 12px;
+	border: var(--border);
+	border-radius: var(--radius-md);
+	color: var(--text-placeholder);
+	font-size: 14px;
+}
+
+@include mobile {
+	.field {
+		padding: 14px;
+	}
+
+	.dragHandle {
+		display: none;
+	}
+}

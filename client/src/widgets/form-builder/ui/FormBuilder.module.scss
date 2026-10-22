@@ -1,7 +1,14 @@
 .grid {
 	display: grid;
 	grid-template-columns: minmax(250px, 292px) minmax(0, 1fr);
+	align-items: start;
 	gap: 12px;
+	transition: opacity var(--duration);
+
+	&.isPending {
+		opacity: 0.55;
+		cursor: wait;
+	}
 }
 
 .sidebar {
@@ -14,6 +21,7 @@
 	}
 
 	.sidebar {
+		width: 100%;
 		max-width: 420px;
 	}
 }

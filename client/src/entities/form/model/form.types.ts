@@ -14,13 +14,20 @@ type FormFieldBase = {
 	required: boolean
 }
 
+type TextConfig = {
+	placeholder?: string
+	minLength?: number
+	maxLength?: number
+}
+
 type TextField = FormFieldBase & {
-	type: 'text' | 'textarea'
-	config: {
-		placeholder?: string
-		minLength?: number
-		maxLength?: number
-	}
+	type: 'text'
+	config: TextConfig
+}
+
+type TextareaField = FormFieldBase & {
+	type: 'textarea'
+	config: TextConfig
 }
 
 type EmailField = FormFieldBase & {
@@ -58,7 +65,12 @@ type CheckboxField = FormFieldBase & {
 }
 
 type FormField =
-	TextField | EmailField | NumberField | ChoiceField | CheckboxField
+	| TextField
+	| TextareaField
+	| EmailField
+	| NumberField
+	| ChoiceField
+	| CheckboxField
 
 type FormPage = {
 	id: number

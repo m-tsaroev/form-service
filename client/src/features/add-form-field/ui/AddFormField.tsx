@@ -7,6 +7,8 @@ import {
 	Type
 } from 'lucide-react'
 
+import { useFormEditorStore } from '@/entities/form'
+
 import { Button } from '@shared/ui'
 
 import type { FormFieldType } from '../model/addFormField.types'
@@ -31,6 +33,9 @@ const FIELD_TYPES = [
 const AddFormField = (props: AddFormFieldProps) => {
 	const { formId } = props
 	const { addField, addingType, error, isPending } = useAddFormField(formId)
+	const isEditorPending = useFormEditorStore(
+		state => state.pendingOperation !== null
+	)
 
 	return (
 		<section className={styles.panel} aria-labelledby='add-field-title'>
@@ -47,7 +52,7 @@ const AddFormField = (props: AddFormFieldProps) => {
 							className={styles.fieldButton}
 							variant='secondary'
 							type='button'
-							disabled={isPending}
+							disabled={isEditorPending}
 							isLoading={isPending && addingType === item.type}
 							onClick={() => addField(item.type)}
 							key={item.type}

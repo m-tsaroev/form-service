@@ -1,5 +1,7 @@
+import type { FormTree } from '@/entities/form'
+
 type FormBuilderProps = {
-	formId: number
+	form: FormTree
 }
 
 export type { FormBuilderProps }

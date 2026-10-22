@@ -1,0 +1,74 @@
+.panel {
+	display: flex;
+	min-width: 0;
+	padding: 24px;
+	border: var(--border);
+	border-radius: var(--radius-lg);
+	background-color: var(--surface);
+	flex-direction: column;
+	gap: 20px;
+}
+
+.heading {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.title {
+	margin: 0;
+	font-size: 20px;
+	font-weight: 700;
+	line-height: 1.25;
+}
+
+.hint,
+.formDescription {
+	color: var(--text-secondary);
+	font-size: 14px;
+	line-height: 1.5;
+}
+
+.canvas {
+	display: flex;
+	min-width: 0;
+	padding: fluid(28, 20);
+	border: var(--border);
+	border-radius: var(--radius-lg);
+	flex-direction: column;
+	gap: 20px;
+}
+
+.formHeading {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+.formTitle {
+	margin: 0;
+	font-size: fluid(28, 24);
+	font-weight: 700;
+	line-height: 1.2;
+}
+
+.fields {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.empty {
+	padding: 32px 20px;
+	border: 1px dashed var(--border-color-secondary);
+	border-radius: var(--radius-md);
+	color: var(--text-tertiary);
+	font-size: 14px;
+	text-align: center;
+}
+
+@include mobile {
+	.panel {
+		padding: 20px;
+	}
+}

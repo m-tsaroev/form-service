@@ -1,10 +1,10 @@
+import { Spinner } from '@shared/ui'
+import clsx from 'clsx'
 import { useParams } from 'react-router'
 
 import { useFormQuery } from '@/entities/form'
 import { FormBuilder } from '@/widgets/form-builder'
 import { FormBuilderHeader } from '@/widgets/form-builder-header'
-
-import { Spinner } from '@shared/ui'
 
 import styles from './FormEditorPage.module.scss'
 
@@ -31,13 +31,13 @@ const FormEditorPage = () => {
 
 	return (
 		<div className={styles.page}>
-			<div className={`container ${styles.container}`}>
+			<div className={clsx('container', styles.container)}>
 				<FormBuilderHeader
 					title={form.title}
 					description='Настройте поля и опубликуйте форму'
 				/>
 
-				<FormBuilder formId={form.id} />
+				<FormBuilder form={form} />
 			</div>
 		</div>
 	)

@@ -4,7 +4,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import {
 	FORM_QUERY_KEYS,
 	type FormField,
-	type FormTree
+	type FormTree,
+	useFormEditorStore
 } from '@/entities/form'
 
 import { createFormField } from '../api/createFormField'
@@ -49,13 +50,23 @@ const addFieldToTree = (tree: FormTree, field: FormField): FormTree => ({
 
 const useAddFormField = (formId: number) => {
 	const queryClient = useQueryClient()
+	const finishOperation = useFormEditorStore(state => state.finishOperation)
+	const selectField = useFormEditorStore(state => state.selectField)
+	const startOperation = useFormEditorStore(state => state.startOperation)
 	const mutation = useMutation<FormField, ApiError, FormFieldType>({
 		mutationFn: type => createFormField(formId, getCreateBody(type)),
+		onMutate: () => {
+			startOperation({ type: 'add' })
+		},
 		onSuccess: field => {
 			queryClient.setQueryData<FormTree>(
 				FORM_QUERY_KEYS.detail(formId),
 				current => (current ? addFieldToTree(current, field) : current)
 			)
+			selectField(field)
+		},
+		onSettled: () => {
+			finishOperation()
 		}
 	})
 
