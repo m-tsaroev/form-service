@@ -1,0 +1,26 @@
+.page,
+.state {
+	display: flex;
+	justify-content: center;
+	min-height: calc(100vh - 68px);
+	padding: fluid(48, 24) var(--container-padding-x);
+}
+
+.page {
+	align-items: flex-start;
+}
+
+.state {
+	align-items: center;
+	flex-direction: column;
+	gap: 12px;
+	text-align: center;
+
+	h1 {
+		font-size: fluid(28, 24);
+	}
+
+	p {
+		color: var(--text-secondary);
+	}
+}

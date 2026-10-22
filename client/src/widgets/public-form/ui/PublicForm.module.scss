@@ -1,0 +1,94 @@
+.form {
+	max-width: 760px;
+}
+
+.description {
+	margin-top: -12px;
+	color: var(--text-secondary);
+	font-size: fluid(18, 15);
+	line-height: 1.5;
+}
+
+.section {
+	gap: fluid(20, 16);
+}
+
+.fieldContent {
+	display: flex;
+	width: 100%;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.fieldDescription {
+	color: var(--text-tertiary);
+	font-size: 13px;
+	line-height: 1.4;
+}
+
+.select {
+	box-sizing: border-box;
+	width: 100%;
+	min-height: 44px;
+	padding: 10px 12px;
+	border: var(--border);
+	border-radius: var(--radius-md);
+	background-color: var(--surface);
+	color: var(--text-primary);
+	font: inherit;
+
+	&[aria-invalid='true'] {
+		border-color: var(--danger);
+	}
+}
+
+.options {
+	display: flex;
+	width: 100%;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.option {
+	display: flex;
+	align-items: center;
+	width: fit-content;
+	gap: 10px;
+	cursor: pointer;
+
+	input {
+		width: 18px;
+		height: 18px;
+		margin: 0;
+		accent-color: var(--primary-active);
+	}
+}
+
+.submit {
+	width: 100%;
+}
+
+.submitError {
+	color: var(--danger);
+	font-size: 14px;
+}
+
+.success {
+	box-sizing: border-box;
+	width: 100%;
+	max-width: 600px;
+	padding: fluid(48, 28);
+	border: var(--border);
+	border-radius: var(--radius-lg);
+	background-color: var(--surface);
+	text-align: center;
+
+	h1 {
+		margin-bottom: 12px;
+		font-size: fluid(28, 24);
+	}
+
+	p {
+		color: var(--text-secondary);
+	}
+}
