@@ -36,6 +36,7 @@ const FormEditorPage = () => {
 					title={form.title}
 					description='Настройте поля и опубликуйте форму'
 					formId={form.id}
+					slug={form.slug}
 					status={form.status}
 				/>
 

@@ -18,6 +18,18 @@
 	text-align: right;
 }
 
+.toastAction {
+	display: inline-flex;
+	align-items: center;
+	min-height: 32px;
+	padding-inline: 12px;
+	border-radius: var(--radius-sm);
+	background-color: var(--primary);
+	color: var(--text-on-primary);
+	font-size: 13px;
+	font-weight: 600;
+}
+
 @include mobile {
 	.action {
 		width: 100%;

@@ -1,5 +1,7 @@
 import type { ReactNode } from 'react'
 
+import { ToastProvider, TooltipProvider } from '@/shared/ui'
+
 import { QueryProvider } from './query-provider/QueryProvider'
 import { ThemeProvider } from './theme-provider/ThemeProvider'
 
@@ -12,7 +14,11 @@ const AppProviders = (props: AppProvidersProps) => {
 
 	return (
 		<QueryProvider>
-			<ThemeProvider>{children}</ThemeProvider>
+			<ThemeProvider>
+				<TooltipProvider delayDuration={350}>
+					<ToastProvider>{children}</ToastProvider>
+				</TooltipProvider>
+			</ThemeProvider>
 		</QueryProvider>
 	)
 }

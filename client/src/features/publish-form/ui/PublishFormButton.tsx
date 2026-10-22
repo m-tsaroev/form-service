@@ -1,5 +1,7 @@
-import { Button } from '@shared/ui'
+import { Button, useToast } from '@shared/ui'
 import { CircleCheck, Send } from 'lucide-react'
+
+import { ROUTES } from '@/shared/config'
 
 import { useFormEditorStore } from '@/entities/form'
 
@@ -13,7 +15,30 @@ const PublishFormButton = (props: PublishFormButtonProps) => {
 	const isEditorPending = useFormEditorStore(
 		state => state.pendingOperation !== null
 	)
+	const { showToast } = useToast()
 	const { error, isPending, publish } = usePublishForm(formId)
+	const handlePublish = () => {
+		publish(undefined, {
+			onSuccess: form => {
+				if (!form.slug) {
+					return
+				}
+
+				const publicPath = ROUTES.PUBLIC_FORM(form.slug)
+				const publicUrl = new URL(publicPath, window.location.origin).toString()
+
+				showToast({
+					title: 'Форма опубликована',
+					description: publicUrl,
+					action: (
+						<a className={styles.toastAction} href={publicPath}>
+							Открыть
+						</a>
+					)
+				})
+			}
+		})
+	}
 
 	return (
 		<div className={styles.action}>
@@ -22,7 +47,7 @@ const PublishFormButton = (props: PublishFormButtonProps) => {
 				type='button'
 				disabled={isPublished || isEditorPending}
 				isLoading={isPending}
-				onClick={() => publish()}
+				onClick={handlePublish}
 			>
 				{isPublished ? (
 					<CircleCheck size={18} aria-hidden='true' />
