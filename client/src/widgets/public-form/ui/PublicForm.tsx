@@ -153,6 +153,7 @@ const PublicForm = (props: PublicFormProps) => {
 			className={styles.form}
 			title={formTree.title}
 			onSubmit={handleSubmit}
+			noValidate
 		>
 			{formTree.description && (
 				<p className={styles.description}>{formTree.description}</p>
