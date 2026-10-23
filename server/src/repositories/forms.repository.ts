@@ -167,6 +167,21 @@ const findFields = (formId: number) =>
 		.all(formId)
 		.map(mapField)
 
+const hasSubmissions = (id: number) => {
+	const row = database
+		.prepare<[number], { exists: 0 | 1 }>(
+			'SELECT EXISTS(SELECT 1 FROM submissions WHERE form_id = ?) AS `exists`'
+		)
+		.get(id)
+
+	return row?.exists === 1
+}
+
+const remove = (id: number) => {
+	const result = database.prepare('DELETE FROM forms WHERE id = ?').run(id)
+	return result.changes > 0
+}
+
 const update = (id: number, input: UpdateFormInput) => {
 	const assignments: string[] = []
 	const values: Array<string | null | number> = []
@@ -225,7 +240,9 @@ export const formsRepository = {
 	findFields,
 	findPages,
 	findPublishedBySlug,
+	hasSubmissions,
 	publish,
+	remove,
 	slugExists,
 	unpublish,
 	update

@@ -208,6 +208,72 @@ test('form submission API persists only valid submissions', async context => {
 		})
 
 		await context.test(
+			'deletes a form without submissions and its structure',
+			async () => {
+				const created = await requestJson(baseUrl, '/api/forms', {
+					method: 'POST',
+					body: JSON.stringify({ title: 'Disposable form' })
+				})
+				assert.equal(created.status, 201)
+				const disposableForm = z
+					.object({
+						id: z.number(),
+						pages: z.array(z.object({ id: z.number() }))
+					})
+					.parse(created.body)
+				const disposablePageId = disposableForm.pages[0]?.id
+				assert.ok(disposablePageId)
+
+				const fieldResponse = await requestJson(
+					baseUrl,
+					`/api/pages/${disposablePageId}/fields`,
+					{
+						method: 'POST',
+						body: JSON.stringify({
+							type: 'text',
+							label: 'Disposable field',
+							config: {}
+						})
+					}
+				)
+				assert.equal(fieldResponse.status, 201)
+				const disposableFieldId = fieldSchema.parse(fieldResponse.body).id
+
+				const removed = await fetch(
+					`${baseUrl}/api/forms/${disposableForm.id}`,
+					{ method: 'DELETE' }
+				)
+				assert.equal(removed.status, 204)
+
+				const formCount = database
+					.prepare<[number], { count: number }>(
+						'SELECT COUNT(*) AS count FROM forms WHERE id = ?'
+					)
+					.get(disposableForm.id)
+				const pageCount = database
+					.prepare<[number], { count: number }>(
+						'SELECT COUNT(*) AS count FROM pages WHERE id = ?'
+					)
+					.get(disposablePageId)
+				const fieldCount = database
+					.prepare<[number], { count: number }>(
+						'SELECT COUNT(*) AS count FROM fields WHERE id = ?'
+					)
+					.get(disposableFieldId)
+				assert.equal(formCount?.count, 0)
+				assert.equal(pageCount?.count, 0)
+				assert.equal(fieldCount?.count, 0)
+
+				const missing = await requestJson(
+					baseUrl,
+					`/api/forms/${disposableForm.id}`,
+					{ method: 'DELETE' }
+				)
+				assert.equal(missing.status, 404)
+			}
+		)
+
+		await context.test(
 			'updates and deletes a field from a draft form',
 			async () => {
 				const created = await requestJson(
@@ -396,6 +462,24 @@ test('form submission API persists only valid submissions', async context => {
 				z.array(formListItemSchema).parse(list.body)[0]?.submissionCount,
 				1
 			)
+		})
+
+		await context.test('preserves a form with submissions', async () => {
+			const response = await requestJson(
+				baseUrl,
+				`/api/forms/${formId}`,
+				{ method: 'DELETE' }
+			)
+			assert.equal(response.status, 409)
+			assert.equal(
+				z
+					.object({ error: z.object({ code: z.string() }) })
+					.parse(response.body).error.code,
+				'FORM_HAS_SUBMISSIONS'
+			)
+
+			const read = await requestJson(baseUrl, `/api/forms/${formId}`)
+			assert.equal(read.status, 200)
 		})
 	} finally {
 		await new Promise<void>((resolve, reject) => {

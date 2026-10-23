@@ -105,6 +105,22 @@ const update = (id: number, input: UpdateFormInput) => {
 	return getById(id)
 }
 
+const remove = (id: number) => {
+	if (!formsRepository.findById(id)) {
+		throw new HttpError(404, 'FORM_NOT_FOUND', 'Form not found')
+	}
+
+	if (formsRepository.hasSubmissions(id)) {
+		throw new HttpError(
+			409,
+			'FORM_HAS_SUBMISSIONS',
+			'Form with submissions cannot be deleted'
+		)
+	}
+
+	formsRepository.remove(id)
+}
+
 const publish = (id: number) => {
 	const form = formsRepository.findById(id)
 
@@ -174,6 +190,7 @@ export const formsService = {
 	getById,
 	getPublicBySlug,
 	publish,
+	remove,
 	unpublish,
 	update
 }

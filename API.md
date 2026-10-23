@@ -102,6 +102,7 @@ VALIDATION_ERROR
 INVALID_JSON
 ROUTE_NOT_FOUND
 FORM_NOT_FOUND
+FORM_HAS_SUBMISSIONS
 PAGE_NOT_FOUND
 FIELD_NOT_FOUND
 FIELD_HAS_ANSWERS
@@ -263,6 +264,24 @@ PATCH /api/forms/:id
 ```text
 400 VALIDATION_ERROR
 404 FORM_NOT_FOUND
+```
+
+### Удаление формы
+
+```http
+DELETE /api/forms/:id
+```
+
+Тело отсутствует. Ответ `204 No Content`.
+
+Страницы и поля формы без отправок удаляются каскадно. Форму с сохранёнными
+отправками удалить нельзя, чтобы не потерять пользовательские ответы.
+
+Ошибки:
+
+```text
+404 FORM_NOT_FOUND
+409 FORM_HAS_SUBMISSIONS
 ```
 
 ### Публикация формы
@@ -936,7 +955,6 @@ GET /api/forms/:id/submissions/:submissionId
 ## Пока не реализовано
 
 ```text
-DELETE /api/forms/:id
 удаление страниц формы
 изменение порядка страниц
 изменение порядка полей

@@ -23,6 +23,11 @@ const update: RequestHandler = (request, response) => {
 	response.json(formsService.update(Number(request.params.id), request.body))
 }
 
+const remove: RequestHandler = (request, response) => {
+	formsService.remove(Number(request.params.id))
+	response.status(204).send()
+}
+
 const publish: RequestHandler = (request, response) => {
 	response.json(formsService.publish(Number(request.params.id)))
 }
@@ -41,6 +46,7 @@ export const formsController = {
 	getById,
 	getPublicBySlug,
 	publish,
+	remove,
 	unpublish,
 	update
 }

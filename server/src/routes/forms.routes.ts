@@ -73,5 +73,10 @@ formsRouter.patch(
 	validate('body', updateFormSchema),
 	formsController.update
 )
+formsRouter.delete(
+	'/:id',
+	validate('params', formIdParamsSchema),
+	formsController.remove
+)
 
 export { formsRouter }
