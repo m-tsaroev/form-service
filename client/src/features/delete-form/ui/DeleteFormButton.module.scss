@@ -1,0 +1,15 @@
+.deleteButton,
+.confirmButton {
+	color: var(--danger);
+
+	@include hover {
+		border-color: var(--danger);
+		background-color: var(--danger-soft);
+		color: var(--danger);
+	}
+}
+
+.confirmation {
+	display: flex;
+	gap: 8px;
+}

@@ -19,6 +19,7 @@ import { ROUTES } from '@/shared/config'
 
 import { useFormQuery } from '@/entities/form'
 import { type Submission, useSubmissionsQuery } from '@/entities/submission'
+import { DeleteFormButton } from '@/features/delete-form'
 
 import {
 	downloadSubmissionsCsv,
@@ -52,7 +53,7 @@ const SubmissionsDashboard = (props: SubmissionsDashboardProps) => {
 	const submissions = submissionsQuery.data ?? EMPTY_SUBMISSIONS
 
 	const fields = useMemo(() => (form ? getFormFields(form) : []), [form])
-  
+
 	const normalizedQuery = query.trim().toLocaleLowerCase('ru-RU')
 
 	const filteredSubmissions = useMemo(() => {
@@ -163,6 +164,12 @@ const SubmissionsDashboard = (props: SubmissionsDashboardProps) => {
 							<ExternalLink size={19} aria-hidden='true' />
 							Открыть форму
 						</Button>
+						<DeleteFormButton
+							formId={form.id}
+							formTitle={form.title}
+							submissionCount={submissions.length}
+							onDeleted={() => navigate(ROUTES.ADMIN)}
+						/>
 					</div>
 				</header>
 

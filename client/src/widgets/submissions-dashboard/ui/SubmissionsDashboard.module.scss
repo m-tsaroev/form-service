@@ -276,9 +276,14 @@
 	}
 
 	.actions > button,
+	.actions > [role='group'],
 	.toolbar > button,
 	.search {
 		width: 100%;
+	}
+
+	.actions > [role='group'] > button {
+		flex: 1;
 	}
 
 	.metric {

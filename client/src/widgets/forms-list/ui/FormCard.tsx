@@ -5,6 +5,8 @@ import { Link } from 'react-router'
 
 import { ROUTES } from '@/shared/config'
 
+import { FormActionsMenu } from '@/features/delete-form'
+
 import type { FormCardProps } from './FormCard.types'
 import styles from './FormsList.module.scss'
 
@@ -38,12 +40,12 @@ const FormCard = (props: FormCardProps) => {
 	const statusLabel = form.status === 'published' ? 'Опубликована' : 'Черновик'
 
 	return (
-		<Link
-			className={styles.cardLink}
-			to={ROUTES.SUBMISSIONS(form.id)}
-			aria-label={`Открыть ответы формы «${form.title}»`}
-		>
-			<Card className={styles.card}>
+		<Card className={styles.card}>
+			<Link
+				className={styles.cardLink}
+				to={ROUTES.SUBMISSIONS(form.id)}
+				aria-label={`Открыть ответы формы «${form.title}»`}
+			>
 				<div className={styles.cardIcon} aria-hidden='true'>
 					<FileText size={22} />
 				</div>
@@ -76,8 +78,14 @@ const FormCard = (props: FormCardProps) => {
 						Обновлено {dateFormatter.format(new Date(form.updatedAt))}
 					</span>
 				</div>
-			</Card>
-		</Link>
+			</Link>
+
+			<FormActionsMenu
+				formId={form.id}
+				formTitle={form.title}
+				submissionCount={form.submissionCount}
+			/>
+		</Card>
 	)
 }
 

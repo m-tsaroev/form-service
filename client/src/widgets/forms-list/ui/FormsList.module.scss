@@ -95,19 +95,23 @@
 }
 
 .cardLink {
-	display: block;
+	display: flex;
+	height: 100%;
 	min-width: 0;
+	padding: 22px;
 	color: inherit;
+	flex-direction: column;
+	gap: 18px;
 }
 
 .card {
+	position: relative;
 	display: flex;
 	height: 100%;
 	min-height: 330px;
-	padding: 22px;
+	padding: 0;
 	border-radius: var(--radius-lg);
 	flex-direction: column;
-	gap: 18px;
 	transition:
 		translate var(--duration),
 		box-shadow var(--duration),

@@ -1,0 +1,42 @@
+.control {
+	position: absolute;
+	top: 18px;
+	right: 18px;
+	z-index: 1;
+}
+
+.button {
+	--button-ghost-color: var(--text-tertiary);
+	--button-ghost-hover: var(--surface-hover);
+}
+
+.menuItem,
+.deleteItem {
+	gap: 10px;
+}
+
+.deleteItem {
+	color: var(--danger);
+
+	&[data-highlighted] {
+		background-color: var(--danger-soft);
+		color: var(--danger);
+	}
+}
+
+.confirmation {
+	display: flex;
+	padding: 4px;
+	border: var(--border);
+	border-radius: var(--radius-md);
+	background-color: var(--surface);
+	box-shadow: var(--shadow-sm);
+	gap: 2px;
+}
+
+.deleteButton {
+	--button-ghost-color: var(--danger);
+	--button-ghost-hover: var(--danger-soft);
+
+	font-weight: 600;
+}
