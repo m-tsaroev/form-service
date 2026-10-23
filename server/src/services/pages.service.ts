@@ -1,6 +1,8 @@
 import { HttpError } from '@server/errors/http-error.js'
+import { fieldsRepository } from '@server/repositories/fields.repository.js'
 import { formsRepository } from '@server/repositories/forms.repository.js'
 import { pagesRepository } from '@server/repositories/pages.repository.js'
+import type { ReorderFieldsInput } from '@server/schemas/field.schema.js'
 import type {
 	CreatePageInput,
 	UpdatePageInput
@@ -48,4 +50,29 @@ const remove = (id: number) => {
 	pagesRepository.remove(id)
 }
 
-export const pagesService = { create, remove, update }
+const reorderFields = (pageId: number, input: ReorderFieldsInput) => {
+	if (!pagesRepository.findById(pageId)) {
+		throw new HttpError(404, 'PAGE_NOT_FOUND', 'Form page not found')
+	}
+
+	const fields = fieldsRepository.findByPageId(pageId)
+	const fieldIds = new Set(fields.map(field => field.id))
+	const inputIds = new Set(input.fieldIds)
+
+	if (
+		fields.length !== input.fieldIds.length ||
+		fieldIds.size !== inputIds.size ||
+		input.fieldIds.some(fieldId => !fieldIds.has(fieldId))
+	) {
+		throw new HttpError(
+			400,
+			'INVALID_FIELD_ORDER',
+			'fieldIds must contain every field from the page exactly once'
+		)
+	}
+
+	fieldsRepository.reorder(pageId, input.fieldIds)
+	return fieldsRepository.findByPageId(pageId)
+}
+
+export const pagesService = { create, remove, reorderFields, update }

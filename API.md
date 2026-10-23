@@ -106,6 +106,7 @@ FORM_HAS_SUBMISSIONS
 PAGE_NOT_FOUND
 FIELD_NOT_FOUND
 FIELD_HAS_ANSWERS
+INVALID_FIELD_ORDER
 FORM_NOT_READY
 INVALID_SUBMISSION
 SUBMISSION_NOT_FOUND
@@ -468,6 +469,34 @@ POST /api/forms/:id/fields
 ```
 
 Он добавляет поле на первую страницу формы.
+
+### Изменение порядка полей
+
+```http
+PATCH /api/pages/:id/fields/order
+```
+
+Тело должно содержать полный список идентификаторов полей этой страницы в новом
+порядке:
+
+```json
+{
+	"fieldIds": [12, 8, 15]
+}
+```
+
+Ответ `200` — актуальный массив полей с обновлёнными `position`.
+
+Ошибки:
+
+```text
+400 VALIDATION_ERROR
+400 INVALID_FIELD_ORDER
+404 PAGE_NOT_FOUND
+```
+
+`fieldIds` не должен содержать дубликаты, неизвестные поля или пропущенные поля
+страницы.
 
 #### Text
 
@@ -974,7 +1003,6 @@ GET /api/forms/:id/submissions/:submissionId
 
 ```text
 изменение порядка страниц
-изменение порядка полей
 поиск и пагинация отправок
 экспорт ответов
 ```

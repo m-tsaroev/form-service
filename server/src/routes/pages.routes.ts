@@ -3,7 +3,10 @@ import { Router } from 'express'
 import { fieldsController } from '@server/controllers/fields.controller.js'
 import { pagesController } from '@server/controllers/pages.controller.js'
 import { validate } from '@server/middleware/validate.middleware.js'
-import { fieldDefinitionSchema } from '@server/schemas/field.schema.js'
+import {
+	fieldDefinitionSchema,
+	reorderFieldsSchema
+} from '@server/schemas/field.schema.js'
 import {
 	pageIdParamsSchema,
 	updatePageSchema
@@ -11,6 +14,12 @@ import {
 
 const pagesRouter = Router()
 
+pagesRouter.patch(
+	'/:id/fields/order',
+	validate('params', pageIdParamsSchema),
+	validate('body', reorderFieldsSchema),
+	pagesController.reorderFields
+)
 pagesRouter.post(
 	'/:id/fields',
 	validate('params', pageIdParamsSchema),

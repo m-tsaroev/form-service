@@ -150,6 +150,22 @@ const fieldIdParamsSchema = z.object({
 	id: z.coerce.number().int().positive()
 })
 
+const reorderFieldsSchema = z
+	.object({
+		fieldIds: z
+			.array(z.number().int().positive())
+			.superRefine((fieldIds, context) => {
+				if (new Set(fieldIds).size !== fieldIds.length) {
+					context.addIssue({
+						code: 'custom',
+						message: 'Field IDs must be unique',
+						path: ['fieldIds']
+					})
+				}
+			})
+	})
+	.strict()
+
 const updateFieldSchema = z
 	.object({
 		type: fieldTypeSchema.optional(),
@@ -166,16 +182,19 @@ const updateFieldSchema = z
 type FieldDefinition = z.infer<typeof fieldDefinitionSchema>
 type FieldOption = z.infer<typeof optionSchema>
 type FieldType = z.infer<typeof fieldTypeSchema>
+type ReorderFieldsInput = z.infer<typeof reorderFieldsSchema>
 type UpdateFieldInput = z.infer<typeof updateFieldSchema>
 
 export {
 	fieldDefinitionSchema,
 	fieldIdParamsSchema,
 	fieldTypeSchema,
+	reorderFieldsSchema,
 	optionSchema,
 	updateFieldSchema,
 	type FieldDefinition,
 	type FieldOption,
 	type FieldType,
+	type ReorderFieldsInput,
 	type UpdateFieldInput
 }

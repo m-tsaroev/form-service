@@ -310,6 +310,102 @@ test('form submission API persists only valid submissions', async context => {
 			}
 		)
 
+		await context.test('reorders fields within a page', async () => {
+			const created = await requestJson(baseUrl, '/api/forms', {
+				method: 'POST',
+				body: JSON.stringify({ title: 'Field order form' })
+			})
+			assert.equal(created.status, 201)
+			const form = z
+				.object({
+					id: z.number(),
+					pages: z.array(z.object({ id: z.number() }))
+				})
+				.parse(created.body)
+			const pageId = form.pages[0]?.id
+			assert.ok(pageId)
+
+			const fieldIds: number[] = []
+			for (const label of ['First', 'Second', 'Third']) {
+				const response = await requestJson(
+					baseUrl,
+					`/api/pages/${pageId}/fields`,
+					{
+						method: 'POST',
+						body: JSON.stringify({ type: 'text', label, config: {} })
+					}
+				)
+				fieldIds.push(fieldSchema.parse(response.body).id)
+			}
+
+			const reorderedIds = [fieldIds[2], fieldIds[0], fieldIds[1]]
+			const reordered = await requestJson(
+				baseUrl,
+				`/api/pages/${pageId}/fields/order`,
+				{
+					method: 'PATCH',
+					body: JSON.stringify({ fieldIds: reorderedIds })
+				}
+			)
+			assert.equal(reordered.status, 200)
+			assert.deepEqual(
+				z
+					.array(z.object({ id: z.number(), position: z.number() }))
+					.parse(reordered.body)
+					.map(field => ({ id: field.id, position: field.position })),
+				reorderedIds.map((id, position) => ({ id, position }))
+			)
+
+			const duplicate = await requestJson(
+				baseUrl,
+				`/api/pages/${pageId}/fields/order`,
+				{
+					method: 'PATCH',
+					body: JSON.stringify({
+						fieldIds: [fieldIds[0], fieldIds[0], fieldIds[1]]
+					})
+				}
+			)
+			assert.equal(duplicate.status, 400)
+
+			const missing = await requestJson(
+				baseUrl,
+				`/api/pages/${pageId}/fields/order`,
+				{
+					method: 'PATCH',
+					body: JSON.stringify({ fieldIds: [fieldIds[0], fieldIds[1]] })
+				}
+			)
+			assert.equal(missing.status, 400)
+			assert.equal(
+				z.object({ error: z.object({ code: z.string() }) }).parse(missing.body)
+					.error.code,
+				'INVALID_FIELD_ORDER'
+			)
+
+			const read = await requestJson(baseUrl, `/api/forms/${form.id}`)
+			const readFields = z
+				.object({
+					pages: z.array(
+						z.object({
+							fields: z.array(
+								z.object({ id: z.number(), position: z.number() })
+							)
+						})
+					)
+				})
+				.parse(read.body)
+			assert.deepEqual(
+				readFields.pages[0]?.fields.map(field => field.id),
+				reorderedIds
+			)
+
+			const removedForm = await fetch(`${baseUrl}/api/forms/${form.id}`, {
+				method: 'DELETE'
+			})
+			assert.equal(removedForm.status, 204)
+		})
+
 		await context.test(
 			'deletes a form without submissions and its structure',
 			async () => {

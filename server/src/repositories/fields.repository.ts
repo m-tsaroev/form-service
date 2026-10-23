@@ -41,6 +41,14 @@ const findById = (id: number) => {
 	return row ? mapField(row) : null
 }
 
+const findByPageId = (pageId: number) =>
+	database
+		.prepare<[number], FieldRow>(
+			'SELECT * FROM fields WHERE page_id = ? ORDER BY position, id'
+		)
+		.all(pageId)
+		.map(mapField)
+
 const findFirstPageId = (formId: number) => {
 	const row = database
 		.prepare<[number], { id: number }>(
@@ -146,6 +154,30 @@ const remove = database.transaction((id: number) => {
 	return true
 })
 
+const reorder = database.transaction((pageId: number, fieldIds: number[]) => {
+	const positionOffset = fieldIds.length
+
+	database
+		.prepare('UPDATE fields SET position = position + ? WHERE page_id = ?')
+		.run(positionOffset, pageId)
+
+	const updatePosition = database.prepare(
+		'UPDATE fields SET position = ? WHERE id = ? AND page_id = ?'
+	)
+
+	for (const [position, fieldId] of fieldIds.entries()) {
+		updatePosition.run(position, fieldId, pageId)
+	}
+
+	database
+		.prepare(
+			`UPDATE forms
+			 SET updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
+			 WHERE id = (SELECT form_id FROM pages WHERE id = ?)`
+		)
+		.run(pageId)
+})
+
 const hasAnswers = (id: number) => {
 	const row = database
 		.prepare<[number], { exists: 0 | 1 }>(
@@ -159,8 +191,10 @@ const hasAnswers = (id: number) => {
 export const fieldsRepository = {
 	create,
 	findById,
+	findByPageId,
 	findFirstPageId,
 	hasAnswers,
 	remove,
+	reorder,
 	update
 }

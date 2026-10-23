@@ -11,9 +11,15 @@ const update: RequestHandler = (request, response) => {
 	response.json(pagesService.update(Number(request.params.id), request.body))
 }
 
+const reorderFields: RequestHandler = (request, response) => {
+	response.json(
+		pagesService.reorderFields(Number(request.params.id), request.body)
+	)
+}
+
 const remove: RequestHandler = (request, response) => {
 	pagesService.remove(Number(request.params.id))
 	response.status(204).send()
 }
 
-export const pagesController = { create, remove, update }
+export const pagesController = { create, remove, reorderFields, update }
