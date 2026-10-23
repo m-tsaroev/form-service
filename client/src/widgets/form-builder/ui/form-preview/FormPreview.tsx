@@ -5,13 +5,16 @@ import type { FormPreviewProps } from './FormPreview.types'
 
 const FormPreview = (props: FormPreviewProps) => {
 	const {
+		activePageId,
 		dirtyFieldIds,
 		form,
 		isDisabled,
 		onFieldSelect,
 		selectedFieldId
 	} = props
-	const fields = form.pages.flatMap(page => page.fields)
+	const activePage = form.pages.find(page => page.id === activePageId)
+	const pageIndex = form.pages.findIndex(page => page.id === activePageId)
+	const fields = activePage?.fields ?? []
 
 	return (
 		<section className={styles.panel} aria-labelledby='form-preview-title'>
@@ -20,7 +23,7 @@ const FormPreview = (props: FormPreviewProps) => {
 					Предпросмотр формы
 				</h2>
 				<p className={styles.hint}>
-					Выберите поле, чтобы изменить его настройки
+					Выберите поле или настройте текущую страницу
 				</p>
 			</div>
 
@@ -31,6 +34,17 @@ const FormPreview = (props: FormPreviewProps) => {
 						<p className={styles.formDescription}>{form.description}</p>
 					)}
 				</div>
+
+				{activePage && (
+					<div className={styles.pageHeading}>
+						<h4 className={styles.pageTitle}>
+							{activePage.title ?? `Страница ${pageIndex + 1}`}
+						</h4>
+						{activePage.description && (
+							<p className={styles.pageDescription}>{activePage.description}</p>
+						)}
+					</div>
+				)}
 
 				{fields.length > 0 ? (
 					<div className={styles.fields}>
@@ -48,7 +62,7 @@ const FormPreview = (props: FormPreviewProps) => {
 					</div>
 				) : (
 					<p className={styles.empty}>
-						Добавьте первое поле с помощью панели слева
+						Добавьте первое поле на эту страницу с помощью панели слева
 					</p>
 				)}
 			</div>

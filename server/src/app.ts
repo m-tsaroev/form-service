@@ -9,6 +9,7 @@ import {
 } from '@server/middleware/error.middleware.js'
 import { fieldsRouter } from '@server/routes/fields.routes.js'
 import { formsRouter } from '@server/routes/forms.routes.js'
+import { pagesRouter } from '@server/routes/pages.routes.js'
 import { publicFormsRouter } from '@server/routes/public-forms.routes.js'
 
 const currentDirectory = path.dirname(fileURLToPath(import.meta.url))
@@ -25,6 +26,7 @@ const createApp = () => {
 
 	app.use('/api/forms', formsRouter)
 	app.use('/api/fields', fieldsRouter)
+	app.use('/api/pages', pagesRouter)
 	app.use('/api/public/forms', publicFormsRouter)
 	app.use('/api', apiNotFound)
 

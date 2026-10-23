@@ -3,7 +3,13 @@ import { create } from 'zustand'
 import type { FormField } from './form.types'
 
 type FormEditorOperationType =
-	'add' | 'update' | 'delete' | 'publish' | 'unpublish'
+	| 'add'
+	| 'update'
+	| 'delete'
+	| 'add-page'
+	| 'update-page'
+	| 'publish'
+	| 'unpublish'
 
 type FormEditorOperation = {
 	type: FormEditorOperationType

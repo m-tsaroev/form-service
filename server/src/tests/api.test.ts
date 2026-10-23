@@ -16,6 +16,13 @@ const formSchema = z.object({
 const formListItemSchema = formSchema.extend({ submissionCount: z.number() })
 
 const fieldSchema = z.object({ id: z.number() })
+const pageSchema = z.object({
+	id: z.number(),
+	formId: z.number(),
+	title: z.string().nullable(),
+	description: z.string().nullable(),
+	position: z.number()
+})
 const updatedFieldSchema = fieldSchema.extend({
 	label: z.string(),
 	config: z.object({ placeholder: z.string().optional() })
@@ -60,6 +67,7 @@ test('form submission API persists only valid submissions', async context => {
 
 	try {
 		let formId = 0
+		let secondPageId = 0
 		let firstFieldId = 0
 		let secondFieldId = 0
 		let slug = ''
@@ -84,19 +92,13 @@ test('form submission API persists only valid submissions', async context => {
 				0
 			)
 
-			const matchingList = await requestJson(
-				baseUrl,
-				'/api/forms?search=app'
-			)
+			const matchingList = await requestJson(baseUrl, '/api/forms?search=app')
 			assert.equal(
 				z.array(formListItemSchema).parse(matchingList.body).length,
 				1
 			)
 
-			const emptyList = await requestJson(
-				baseUrl,
-				'/api/forms?search=missing'
-			)
+			const emptyList = await requestJson(baseUrl, '/api/forms?search=missing')
 			assert.equal(z.array(formListItemSchema).parse(emptyList.body).length, 0)
 
 			const escapedWildcard = await requestJson(
@@ -123,50 +125,135 @@ test('form submission API persists only valid submissions', async context => {
 			assert.equal(response.status, 404)
 		})
 
-		await context.test('updates and deletes a field from a draft form', async () => {
-			const created = await requestJson(
+		await context.test('creates, updates and targets a form page', async () => {
+			const created = await requestJson(baseUrl, `/api/forms/${formId}/pages`, {
+				method: 'POST',
+				body: JSON.stringify({ title: 'Details' })
+			})
+			assert.equal(created.status, 201)
+			const page = pageSchema.parse(created.body)
+			secondPageId = page.id
+			assert.equal(page.formId, formId)
+			assert.equal(page.position, 1)
+
+			const updated = await requestJson(baseUrl, `/api/pages/${secondPageId}`, {
+				method: 'PATCH',
+				body: JSON.stringify({
+					title: 'Contact details',
+					description: 'How can we reach you?'
+				})
+			})
+			assert.equal(updated.status, 200)
+			assert.equal(pageSchema.parse(updated.body).title, 'Contact details')
+
+			const fieldResponse = await requestJson(
 				baseUrl,
-				`/api/forms/${formId}/fields`,
+				`/api/pages/${secondPageId}/fields`,
 				{
 					method: 'POST',
 					body: JSON.stringify({
-						type: 'text',
-						label: 'Temporary field',
+						type: 'email',
+						label: 'Contact email',
 						config: {}
 					})
 				}
 			)
-			assert.equal(created.status, 201)
-			const fieldId = fieldSchema.parse(created.body).id
+			assert.equal(fieldResponse.status, 201)
+			const field = z
+				.object({ id: z.number(), pageId: z.number() })
+				.parse(fieldResponse.body)
+			assert.equal(field.pageId, secondPageId)
 
-			const updated = await requestJson(baseUrl, `/api/fields/${fieldId}`, {
-				method: 'PATCH',
-				body: JSON.stringify({
+			const read = await requestJson(baseUrl, `/api/forms/${formId}`)
+			const tree = z
+				.object({
+					pages: z.array(
+						pageSchema.extend({ fields: z.array(z.object({ id: z.number() })) })
+					)
+				})
+				.parse(read.body)
+			assert.equal(tree.pages.length, 2)
+			assert.equal(
+				tree.pages.find(item => item.id === secondPageId)?.fields[0]?.id,
+				field.id
+			)
+
+			const emptyUpdate = await requestJson(
+				baseUrl,
+				`/api/pages/${secondPageId}`,
+				{ method: 'PATCH', body: JSON.stringify({}) }
+			)
+			assert.equal(emptyUpdate.status, 400)
+
+			const missingForm = await requestJson(
+				baseUrl,
+				'/api/forms/999999/pages',
+				{ method: 'POST', body: JSON.stringify({}) }
+			)
+			assert.equal(missingForm.status, 404)
+
+			const missingPage = await requestJson(
+				baseUrl,
+				'/api/pages/999999/fields',
+				{
+					method: 'POST',
+					body: JSON.stringify({
+						type: 'text',
+						label: 'Missing page field',
+						config: {}
+					})
+				}
+			)
+			assert.equal(missingPage.status, 404)
+		})
+
+		await context.test(
+			'updates and deletes a field from a draft form',
+			async () => {
+				const created = await requestJson(
+					baseUrl,
+					`/api/forms/${formId}/fields`,
+					{
+						method: 'POST',
+						body: JSON.stringify({
+							type: 'text',
+							label: 'Temporary field',
+							config: {}
+						})
+					}
+				)
+				assert.equal(created.status, 201)
+				const fieldId = fieldSchema.parse(created.body).id
+
+				const updated = await requestJson(baseUrl, `/api/fields/${fieldId}`, {
+					method: 'PATCH',
+					body: JSON.stringify({
+						label: 'Updated field',
+						config: { placeholder: 'Updated placeholder' }
+					})
+				})
+				assert.equal(updated.status, 200)
+				assert.deepEqual(updatedFieldSchema.parse(updated.body), {
+					id: fieldId,
 					label: 'Updated field',
 					config: { placeholder: 'Updated placeholder' }
 				})
-			})
-			assert.equal(updated.status, 200)
-			assert.deepEqual(updatedFieldSchema.parse(updated.body), {
-				id: fieldId,
-				label: 'Updated field',
-				config: { placeholder: 'Updated placeholder' }
-			})
 
-			const removed = await fetch(`${baseUrl}/api/fields/${fieldId}`, {
-				method: 'DELETE'
-			})
-			assert.equal(removed.status, 204)
+				const removed = await fetch(`${baseUrl}/api/fields/${fieldId}`, {
+					method: 'DELETE'
+				})
+				assert.equal(removed.status, 204)
 
-			const read = await requestJson(baseUrl, `/api/forms/${formId}`)
-			const form = formTreeSchema.parse(read.body)
-			assert.equal(
-				form.pages.some(page =>
-					page.fields.some(field => field.id === fieldId)
-				),
-				false
-			)
-		})
+				const read = await requestJson(baseUrl, `/api/forms/${formId}`)
+				const form = formTreeSchema.parse(read.body)
+				assert.equal(
+					form.pages.some(page =>
+						page.fields.some(field => field.id === fieldId)
+					),
+					false
+				)
+			}
+		)
 
 		await context.test('prepares and publishes the form', async () => {
 			const firstField = await requestJson(

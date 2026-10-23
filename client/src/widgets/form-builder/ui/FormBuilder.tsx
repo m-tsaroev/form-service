@@ -1,21 +1,28 @@
 import clsx from 'clsx'
 import { useEffect, useRef, useState } from 'react'
 
-import { useFormEditorStore } from '@/entities/form'
+import { type FormField, useFormEditorStore } from '@/entities/form'
 import { AddFormField } from '@/features/add-form-field'
 import { FieldSettings } from '@/features/update-form-field'
+import { PageSettings } from '@/features/update-form-page'
 
 import styles from './FormBuilder.module.scss'
 import type { FormBuilderProps } from './FormBuilder.types'
+import { FormPages } from './form-pages/FormPages'
 import { FormPreview } from './form-preview/FormPreview'
+
+const EMPTY_FIELDS: FormField[] = []
 
 const FormBuilder = (props: FormBuilderProps) => {
 	const { form } = props
 
 	const hasInitializedSelection = useRef(false)
+	const [activePageId, setActivePageId] = useState(form.pages[0]?.id ?? 0)
 	const [fieldToRevealId, setFieldToRevealId] = useState<number | null>(null)
 
-	const fields = form.pages.flatMap(page => page.fields)
+	const activePage =
+		form.pages.find(page => page.id === activePageId) ?? form.pages[0]
+	const fields = activePage?.fields ?? EMPTY_FIELDS
 	const canRevealAddedField =
 		fieldToRevealId !== null &&
 		fields.some(field => field.id === fieldToRevealId)
@@ -44,7 +51,7 @@ const FormBuilder = (props: FormBuilderProps) => {
 	useEffect(() => {
 		if (!hasInitializedSelection.current) {
 			hasInitializedSelection.current = true
-			selectField(fields[0] ?? null)
+			selectField(null)
 			return
 		}
 
@@ -130,24 +137,59 @@ const FormBuilder = (props: FormBuilderProps) => {
 		selectField(fields.find(field => field.id === fieldId) ?? null)
 	}
 
+	const handlePageSelect = (pageId: number) => {
+		if (pendingOperation) {
+			return
+		}
+
+		setActivePageId(pageId)
+		selectField(null)
+	}
+
+	const handlePageAdded = (pageId: number) => {
+		setActivePageId(pageId)
+		selectField(null)
+	}
+
+	if (!activePage) {
+		return null
+	}
+
 	return (
 		<div
 			className={clsx(styles.grid, pendingOperation && styles.isPending)}
 			aria-busy={pendingOperation !== null}
 		>
 			<aside className={styles.sidebar}>
-				<AddFormField formId={form.id} onFieldAdded={setFieldToRevealId} />
+				<FormPages
+					activePageId={activePage.id}
+					formId={form.id}
+					isDisabled={pendingOperation !== null}
+					pages={form.pages}
+					onPageAdded={handlePageAdded}
+					onPageSelect={handlePageSelect}
+				/>
+				<AddFormField
+					formId={form.id}
+					pageId={activePage.id}
+					onFieldAdded={setFieldToRevealId}
+				/>
 			</aside>
 
 			<FormPreview
 				form={previewForm}
+				activePageId={activePage.id}
 				selectedFieldId={selectedField?.id ?? null}
 				dirtyFieldIds={dirtyFieldIds}
 				isDisabled={pendingOperation !== null}
 				onFieldSelect={handleFieldSelect}
 			/>
 
-			<FieldSettings field={selectedField} formId={form.id} />
+			{selectedField ? (
+				<FieldSettings field={selectedField} formId={form.id} />
+			) : (
+				<PageSettings formId={form.id} page={activePage} key={activePage.id} />
+			)}
 		</div>
 	)
 }

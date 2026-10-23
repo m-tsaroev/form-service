@@ -1,0 +1,74 @@
+.panel {
+	position: sticky;
+	top: 16px;
+	display: flex;
+	min-width: 0;
+	max-height: calc(100vh - 32px);
+	padding: 24px;
+	overflow-y: auto;
+	border: var(--border);
+	border-radius: var(--radius-lg);
+	background-color: var(--surface);
+	flex-direction: column;
+	gap: 20px;
+}
+
+.heading {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.title {
+	margin: 0;
+	font-size: 20px;
+	font-weight: 700;
+}
+
+.fieldset {
+	display: flex;
+	width: 100%;
+	flex-direction: column;
+	gap: 18px;
+
+	> div {
+		gap: 7px;
+
+		> label {
+			font-size: 13px;
+			font-weight: 400;
+		}
+	}
+
+	&:disabled {
+		cursor: wait;
+	}
+}
+
+.description {
+	min-height: 96px;
+	resize: vertical;
+}
+
+.error {
+	color: var(--danger);
+	font-size: 12px;
+	line-height: 1.4;
+}
+
+@include laptop {
+	.panel {
+		position: static;
+		width: 100%;
+		max-width: 520px;
+		max-height: none;
+		overflow-y: visible;
+	}
+}
+
+@include mobile {
+	.panel {
+		max-width: none;
+		padding: 20px;
+	}
+}

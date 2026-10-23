@@ -2,6 +2,7 @@ import type { FormTree } from '@/entities/form'
 
 type FormPreviewProps = {
 	form: FormTree
+	activePageId: number
 	selectedFieldId: number | null
 	dirtyFieldIds: ReadonlySet<number>
 	isDisabled: boolean

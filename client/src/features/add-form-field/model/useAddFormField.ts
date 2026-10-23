@@ -47,6 +47,7 @@ const addFieldToTree = (tree: FormTree, field: FormField): FormTree => ({
 
 const useAddFormField = (
 	formId: number,
+	pageId: number,
 	onFieldAdded?: (fieldId: number) => void
 ) => {
 	const queryClient = useQueryClient()
@@ -56,7 +57,7 @@ const useAddFormField = (
 	const startOperation = useFormEditorStore(state => state.startOperation)
 
 	const mutation = useMutation<FormField, ApiError, FormFieldType>({
-		mutationFn: type => createFormField(formId, getCreateBody(type)),
+		mutationFn: type => createFormField(pageId, getCreateBody(type)),
 		onMutate: () => {
 			startOperation({ type: 'add' })
 		},

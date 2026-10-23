@@ -30,9 +30,10 @@ const FIELD_TYPES = [
 }>
 
 const AddFormField = (props: AddFormFieldProps) => {
-	const { formId, onFieldAdded } = props
+	const { formId, pageId, onFieldAdded } = props
 	const { addField, addingType, error, isPending } = useAddFormField(
 		formId,
+		pageId,
 		onFieldAdded
 	)
 	const isEditorPending = useFormEditorStore(

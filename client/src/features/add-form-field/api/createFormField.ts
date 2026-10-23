@@ -5,9 +5,9 @@ import type { FormField } from '@/entities/form'
 
 import type { CreateFormFieldBody } from '../model/addFormField.types'
 
-const createFormField = async (formId: number, body: CreateFormFieldBody) => {
+const createFormField = async (pageId: number, body: CreateFormFieldBody) => {
 	const response = await apiAxios.post<FormField>(
-		API_ROUTES.FORM_FIELDS(formId),
+		API_ROUTES.PAGE_FIELDS(pageId),
 		body
 	)
 

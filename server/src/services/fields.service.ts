@@ -1,6 +1,7 @@
 import { HttpError } from '@server/errors/http-error.js'
 import { fieldsRepository } from '@server/repositories/fields.repository.js'
 import { formsRepository } from '@server/repositories/forms.repository.js'
+import { pagesRepository } from '@server/repositories/pages.repository.js'
 import {
 	type FieldDefinition,
 	type UpdateFieldInput,
@@ -19,6 +20,17 @@ const create = (formId: number, input: FieldDefinition) => {
 	}
 
 	const fieldId = fieldsRepository.create(formId, pageId, input)
+	return fieldsRepository.findById(fieldId)
+}
+
+const createForPage = (pageId: number, input: FieldDefinition) => {
+	const page = pagesRepository.findById(pageId)
+
+	if (!page) {
+		throw new HttpError(404, 'PAGE_NOT_FOUND', 'Form page not found')
+	}
+
+	const fieldId = fieldsRepository.create(page.formId, page.id, input)
 	return fieldsRepository.findById(fieldId)
 }
 
@@ -77,4 +89,4 @@ const remove = (id: number) => {
 	fieldsRepository.remove(id)
 }
 
-export const fieldsService = { create, remove, update }
+export const fieldsService = { create, createForPage, remove, update }
