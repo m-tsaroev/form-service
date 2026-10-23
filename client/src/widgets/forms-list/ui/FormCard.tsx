@@ -40,8 +40,8 @@ const FormCard = (props: FormCardProps) => {
 	return (
 		<Link
 			className={styles.cardLink}
-			to={ROUTES.FORM_ID(form.id)}
-			aria-label={`Открыть форму «${form.title}»`}
+			to={ROUTES.SUBMISSIONS(form.id)}
+			aria-label={`Открыть ответы формы «${form.title}»`}
 		>
 			<Card className={styles.card}>
 				<div className={styles.cardIcon} aria-hidden='true'>

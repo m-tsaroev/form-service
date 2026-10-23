@@ -147,7 +147,24 @@ const ensureFormExists = (formId: number) => {
 
 const getAll = (formId: number) => {
 	ensureFormExists(formId)
-	return submissionsRepository.findAllByFormId(formId)
+	const submissions = submissionsRepository.findAllByFormId(formId)
+	const answers = submissionsRepository.findAnswersByFormId(formId)
+	const answersBySubmissionId = new Map<number, (typeof answers)[number][]>()
+
+	for (const answer of answers) {
+		const submissionAnswers = answersBySubmissionId.get(answer.submissionId)
+
+		if (submissionAnswers) {
+			submissionAnswers.push(answer)
+		} else {
+			answersBySubmissionId.set(answer.submissionId, [answer])
+		}
+	}
+
+	return submissions.map(submission => ({
+		...submission,
+		answers: answersBySubmissionId.get(submission.id) ?? []
+	}))
 }
 
 const getById = (formId: number, submissionId: number) => {

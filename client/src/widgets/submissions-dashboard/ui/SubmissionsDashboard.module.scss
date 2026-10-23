@@ -1,0 +1,292 @@
+.page {
+	padding-block: fluid(40, 24) fluid(64, 32);
+}
+
+.container {
+	display: flex;
+	width: 100%;
+	max-width: calc(var(--container-width) + var(--container-padding-x) * 2);
+	margin-inline: auto;
+	padding-inline: var(--container-padding-x);
+	flex-direction: column;
+	gap: fluid(28, 20);
+}
+
+.backButton {
+	align-self: flex-start;
+	min-height: 36px;
+	margin-left: -12px;
+	color: var(--text-secondary);
+}
+
+.header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 24px;
+}
+
+.heading {
+	min-width: 0;
+}
+
+.titleRow {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 14px;
+}
+
+.title {
+	min-width: 0;
+	margin: 0;
+	font-size: fluid(42, 30);
+	font-weight: 700;
+	line-height: 1.1;
+	overflow-wrap: anywhere;
+}
+
+.status {
+	width: fit-content;
+	padding: 7px 12px;
+	border-radius: var(--radius-full);
+	font-size: 13px;
+	font-weight: 500;
+	white-space: nowrap;
+
+	&.published {
+		background-color: var(--success-soft);
+		color: var(--success);
+	}
+
+	&.draft {
+		background-color: var(--surface-secondary);
+		color: var(--text-secondary);
+	}
+}
+
+.updatedAt {
+	margin-top: 10px;
+	color: var(--text-secondary);
+}
+
+.actions {
+	display: flex;
+	flex: 0 0 auto;
+	gap: 12px;
+}
+
+.metrics {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 12px;
+}
+
+.metric {
+	display: flex;
+	min-height: 114px;
+	padding: 20px;
+	align-items: center;
+	gap: 18px;
+
+	> div {
+		display: flex;
+		min-width: 0;
+		flex-direction: column;
+		gap: 5px;
+	}
+
+	strong {
+		font-size: fluid(24, 20);
+		line-height: 1.2;
+		overflow-wrap: anywhere;
+	}
+
+	span:not(.metricIcon) {
+		color: var(--text-secondary);
+	}
+}
+
+.metricIcon {
+	display: inline-flex;
+	width: 54px;
+	height: 54px;
+	border-radius: var(--radius-md);
+	background-color: var(--surface-secondary);
+	color: var(--text-primary);
+	align-items: center;
+	justify-content: center;
+	flex: 0 0 auto;
+}
+
+.responses {
+	display: flex;
+	padding: fluid(28, 16);
+	flex-direction: column;
+	gap: 20px;
+
+	h2 {
+		font-size: fluid(26, 22);
+	}
+}
+
+.toolbar {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+}
+
+.search {
+	position: relative;
+	display: flex;
+	width: min(100%, 680px);
+	align-items: center;
+
+	> svg {
+		position: absolute;
+		left: 14px;
+		z-index: 1;
+		color: var(--text-tertiary);
+		pointer-events: none;
+	}
+}
+
+.searchInput {
+	min-height: 46px;
+	padding-left: 44px;
+}
+
+.tableWrapper {
+	border: var(--border);
+	border-radius: var(--radius-md);
+	overflow-x: auto;
+}
+
+.table {
+	width: max-content;
+	min-width: 100%;
+	border-collapse: collapse;
+
+	th,
+	td {
+		min-width: 170px;
+		max-width: 280px;
+		padding: 15px 18px;
+		border-bottom: var(--border);
+		text-align: left;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		overflow: hidden;
+	}
+
+	th {
+		background-color: var(--surface-secondary);
+		color: var(--text-secondary);
+		font-size: 14px;
+		font-weight: 600;
+	}
+
+	td {
+		font-size: 15px;
+	}
+
+	tbody tr {
+		transition: background-color var(--duration);
+
+		@include hover {
+			background-color: var(--surface-hover);
+		}
+
+		&:last-child td {
+			border-bottom: none;
+		}
+	}
+}
+
+.empty {
+	display: flex;
+	min-height: 180px;
+	padding: 24px;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+	gap: 8px;
+	text-align: center;
+
+	h3 {
+		font-size: 19px;
+	}
+
+	p {
+		color: var(--text-secondary);
+	}
+}
+
+.pagination {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	color: var(--text-secondary);
+	font-size: 14px;
+	gap: 16px;
+
+	> div {
+		display: flex;
+		gap: 8px;
+	}
+}
+
+.state {
+	display: flex;
+	min-height: 60vh;
+	padding: 24px;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+	gap: 10px;
+	text-align: center;
+
+	p {
+		color: var(--text-secondary);
+	}
+}
+
+.visuallyHidden {
+	@include visually-hidden;
+}
+
+@media (width <= 960px) {
+	.header {
+		align-items: flex-start;
+		flex-direction: column;
+	}
+
+	.metrics {
+		grid-template-columns: 1fr;
+	}
+}
+
+@include mobile {
+	.actions,
+	.toolbar {
+		width: 100%;
+		align-items: stretch;
+		flex-direction: column;
+	}
+
+	.actions > button,
+	.toolbar > button,
+	.search {
+		width: 100%;
+	}
+
+	.metric {
+		min-height: 100px;
+	}
+
+	.pagination {
+		align-items: flex-start;
+		flex-direction: column;
+	}
+}

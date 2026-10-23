@@ -26,6 +26,15 @@ const mapSubmission = (row: SubmissionRow): Submission => ({
 	createdAt: row.created_at
 })
 
+const mapAnswerDetails = (row: AnswerDetailsRow) => ({
+	id: row.id,
+	submissionId: row.submission_id,
+	fieldId: row.field_id,
+	fieldLabel: row.field_label,
+	fieldType: row.field_type,
+	value: answerValueSchema.parse(JSON.parse(row.value) as unknown)
+})
+
 const create = database.transaction(
 	(formId: number, answers: AnswerInput[]) => {
 		const submissionResult = database
@@ -95,18 +104,26 @@ const findAnswers = (submissionId: number) =>
 			 ORDER BY fields.position, answers.id`
 		)
 		.all(submissionId)
-		.map(row => ({
-			id: row.id,
-			submissionId: row.submission_id,
-			fieldId: row.field_id,
-			fieldLabel: row.field_label,
-			fieldType: row.field_type,
-			value: answerValueSchema.parse(JSON.parse(row.value) as unknown)
-		}))
+		.map(mapAnswerDetails)
+
+const findAnswersByFormId = (formId: number) =>
+	database
+		.prepare<[number], AnswerDetailsRow>(
+			`SELECT answers.*, fields.label AS field_label, fields.type AS field_type
+			 FROM answers
+			 JOIN submissions ON submissions.id = answers.submission_id
+			 JOIN fields ON fields.id = answers.field_id
+			 WHERE submissions.form_id = ?
+			 ORDER BY submissions.created_at DESC, submissions.id DESC,
+			   fields.position, answers.id`
+		)
+		.all(formId)
+		.map(mapAnswerDetails)
 
 export const submissionsRepository = {
 	create,
 	findAllByFormId,
 	findAnswers,
+	findAnswersByFormId,
 	findByIdAndFormId
 }

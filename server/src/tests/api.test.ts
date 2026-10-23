@@ -297,7 +297,12 @@ test('form submission API persists only valid submissions', async context => {
 				`/api/forms/${formId}/submissions`
 			)
 			assert.equal(submissions.status, 200)
-			assert.equal(z.array(z.unknown()).parse(submissions.body).length, 1)
+			const savedSubmissions = z.array(submissionSchema).parse(submissions.body)
+			assert.equal(savedSubmissions.length, 1)
+			assert.deepEqual(
+				savedSubmissions[0]?.answers.map(answer => answer.fieldId),
+				[firstFieldId, secondFieldId]
+			)
 
 			const list = await requestJson(baseUrl, '/api/forms')
 			assert.equal(
