@@ -22,4 +22,30 @@ const update = (id: number, input: UpdatePageInput) => {
 	return pagesRepository.findById(id)
 }
 
-export const pagesService = { create, update }
+const remove = (id: number) => {
+	const page = pagesRepository.findById(id)
+
+	if (!page) {
+		throw new HttpError(404, 'PAGE_NOT_FOUND', 'Form page not found')
+	}
+
+	if (pagesRepository.countByFormId(page.formId) === 1) {
+		throw new HttpError(
+			409,
+			'FORM_REQUIRES_PAGE',
+			'Form must contain at least one page'
+		)
+	}
+
+	if (pagesRepository.hasAnswers(id)) {
+		throw new HttpError(
+			409,
+			'PAGE_HAS_ANSWERS',
+			'Form page with submitted answers cannot be deleted'
+		)
+	}
+
+	pagesRepository.remove(id)
+}
+
+export const pagesService = { create, remove, update }

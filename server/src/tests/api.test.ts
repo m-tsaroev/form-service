@@ -68,6 +68,7 @@ test('form submission API persists only valid submissions', async context => {
 	try {
 		let formId = 0
 		let secondPageId = 0
+		let secondPageFieldId = 0
 		let firstFieldId = 0
 		let secondFieldId = 0
 		let slug = ''
@@ -162,6 +163,7 @@ test('form submission API persists only valid submissions', async context => {
 			const field = z
 				.object({ id: z.number(), pageId: z.number() })
 				.parse(fieldResponse.body)
+			secondPageFieldId = field.id
 			assert.equal(field.pageId, secondPageId)
 
 			const read = await requestJson(baseUrl, `/api/forms/${formId}`)
@@ -206,6 +208,107 @@ test('form submission API persists only valid submissions', async context => {
 			)
 			assert.equal(missingPage.status, 404)
 		})
+
+		await context.test(
+			'deletes a page, its fields and normalizes positions',
+			async () => {
+				const created = await requestJson(baseUrl, '/api/forms', {
+					method: 'POST',
+					body: JSON.stringify({ title: 'Page deletion form' })
+				})
+				assert.equal(created.status, 201)
+				const disposableForm = z
+					.object({
+						id: z.number(),
+						pages: z.array(pageSchema)
+					})
+					.parse(created.body)
+				const firstPageId = disposableForm.pages[0]?.id
+				assert.ok(firstPageId)
+
+				const secondPageResponse = await requestJson(
+					baseUrl,
+					`/api/forms/${disposableForm.id}/pages`,
+					{ method: 'POST', body: JSON.stringify({ title: 'Second' }) }
+				)
+				const secondPage = pageSchema.parse(secondPageResponse.body)
+				const thirdPageResponse = await requestJson(
+					baseUrl,
+					`/api/forms/${disposableForm.id}/pages`,
+					{ method: 'POST', body: JSON.stringify({ title: 'Third' }) }
+				)
+				const thirdPage = pageSchema.parse(thirdPageResponse.body)
+
+				const fieldResponse = await requestJson(
+					baseUrl,
+					`/api/pages/${secondPage.id}/fields`,
+					{
+						method: 'POST',
+						body: JSON.stringify({
+							type: 'text',
+							label: 'Disposable page field',
+							config: {}
+						})
+					}
+				)
+				const fieldId = fieldSchema.parse(fieldResponse.body).id
+
+				const removed = await fetch(`${baseUrl}/api/pages/${secondPage.id}`, {
+					method: 'DELETE'
+				})
+				assert.equal(removed.status, 204)
+
+				const read = await requestJson(
+					baseUrl,
+					`/api/forms/${disposableForm.id}`
+				)
+				const form = z.object({ pages: z.array(pageSchema) }).parse(read.body)
+				assert.deepEqual(
+					form.pages.map(page => ({ id: page.id, position: page.position })),
+					[
+						{ id: firstPageId, position: 0 },
+						{ id: thirdPage.id, position: 1 }
+					]
+				)
+
+				const fieldCount = database
+					.prepare<[number], { count: number }>(
+						'SELECT COUNT(*) AS count FROM fields WHERE id = ?'
+					)
+					.get(fieldId)
+				assert.equal(fieldCount?.count, 0)
+
+				const removedThirdPage = await fetch(
+					`${baseUrl}/api/pages/${thirdPage.id}`,
+					{ method: 'DELETE' }
+				)
+				assert.equal(removedThirdPage.status, 204)
+
+				const lastPage = await requestJson(
+					baseUrl,
+					`/api/pages/${firstPageId}`,
+					{ method: 'DELETE' }
+				)
+				assert.equal(lastPage.status, 409)
+				assert.equal(
+					z
+						.object({ error: z.object({ code: z.string() }) })
+						.parse(lastPage.body).error.code,
+					'FORM_REQUIRES_PAGE'
+				)
+
+				const missingPage = await requestJson(baseUrl, '/api/pages/999999', {
+					method: 'DELETE'
+				})
+				assert.equal(missingPage.status, 404)
+
+				const removedForm = await fetch(
+					`${baseUrl}/api/forms/${disposableForm.id}`,
+					{ method: 'DELETE' }
+				)
+				assert.equal(removedForm.status, 204)
+			}
+		)
 
 		await context.test(
 			'deletes a form without submissions and its structure',
@@ -436,14 +539,15 @@ test('form submission API persists only valid submissions', async context => {
 					body: JSON.stringify({
 						answers: [
 							{ fieldId: firstFieldId, value: 'Ada' },
-							{ fieldId: secondFieldId, value: 'online' }
+							{ fieldId: secondFieldId, value: 'online' },
+							{ fieldId: secondPageFieldId, value: 'ada@example.com' }
 						]
 					})
 				}
 			)
 			assert.equal(response.status, 201)
 			const submission = submissionSchema.parse(response.body)
-			assert.equal(submission.answers.length, 2)
+			assert.equal(submission.answers.length, 3)
 
 			const submissions = await requestJson(
 				baseUrl,
@@ -453,8 +557,12 @@ test('form submission API persists only valid submissions', async context => {
 			const savedSubmissions = z.array(submissionSchema).parse(submissions.body)
 			assert.equal(savedSubmissions.length, 1)
 			assert.deepEqual(
-				savedSubmissions[0]?.answers.map(answer => answer.fieldId),
-				[firstFieldId, secondFieldId]
+				savedSubmissions[0]?.answers
+					.map(answer => answer.fieldId)
+					.toSorted((left, right) => left - right),
+				[firstFieldId, secondFieldId, secondPageFieldId].toSorted(
+					(left, right) => left - right
+				)
 			)
 
 			const list = await requestJson(baseUrl, '/api/forms')
@@ -464,17 +572,35 @@ test('form submission API persists only valid submissions', async context => {
 			)
 		})
 
-		await context.test('preserves a form with submissions', async () => {
+		await context.test('preserves a page with submitted answers', async () => {
 			const response = await requestJson(
 				baseUrl,
-				`/api/forms/${formId}`,
+				`/api/pages/${secondPageId}`,
 				{ method: 'DELETE' }
 			)
 			assert.equal(response.status, 409)
 			assert.equal(
-				z
-					.object({ error: z.object({ code: z.string() }) })
-					.parse(response.body).error.code,
+				z.object({ error: z.object({ code: z.string() }) }).parse(response.body)
+					.error.code,
+				'PAGE_HAS_ANSWERS'
+			)
+
+			const read = await requestJson(baseUrl, `/api/forms/${formId}`)
+			const form = z.object({ pages: z.array(pageSchema) }).parse(read.body)
+			assert.equal(
+				form.pages.some(page => page.id === secondPageId),
+				true
+			)
+		})
+
+		await context.test('preserves a form with submissions', async () => {
+			const response = await requestJson(baseUrl, `/api/forms/${formId}`, {
+				method: 'DELETE'
+			})
+			assert.equal(response.status, 409)
+			assert.equal(
+				z.object({ error: z.object({ code: z.string() }) }).parse(response.body)
+					.error.code,
 				'FORM_HAS_SUBMISSIONS'
 			)
 

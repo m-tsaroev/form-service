@@ -23,5 +23,10 @@ pagesRouter.patch(
 	validate('body', updatePageSchema),
 	pagesController.update
 )
+pagesRouter.delete(
+	'/:id',
+	validate('params', pageIdParamsSchema),
+	pagesController.remove
+)
 
 export { pagesRouter }

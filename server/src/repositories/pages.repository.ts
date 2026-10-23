@@ -29,6 +29,30 @@ const findById = (id: number) => {
 	return row ? mapPage(row) : null
 }
 
+const countByFormId = (formId: number) => {
+	const row = database
+		.prepare<[number], { count: number }>(
+			'SELECT COUNT(*) AS count FROM pages WHERE form_id = ?'
+		)
+		.get(formId)
+
+	return row?.count ?? 0
+}
+
+const hasAnswers = (id: number) => {
+	const row = database
+		.prepare<[number], { exists: 0 | 1 }>(
+			`SELECT EXISTS(
+				SELECT 1 FROM answers
+				JOIN fields ON fields.id = answers.field_id
+				WHERE fields.page_id = ?
+			) AS \`exists\``
+		)
+		.get(id)
+
+	return row?.exists === 1
+}
+
 const create = database.transaction(
 	(formId: number, input: CreatePageInput) => {
 		const positionRow = database
@@ -88,4 +112,39 @@ const update = database.transaction((id: number, input: UpdatePageInput) => {
 	return result.changes > 0
 })
 
-export const pagesRepository = { create, findById, update }
+const remove = database.transaction((id: number) => {
+	const page = database
+		.prepare<[number], Pick<PageRow, 'form_id' | 'position'>>(
+			'SELECT form_id, position FROM pages WHERE id = ?'
+		)
+		.get(id)
+
+	if (!page) {
+		return false
+	}
+
+	database.prepare('DELETE FROM pages WHERE id = ?').run(id)
+	database
+		.prepare(
+			`UPDATE pages
+			 SET position = position - 1
+			 WHERE form_id = ? AND position > ?`
+		)
+		.run(page.form_id, page.position)
+	database
+		.prepare(
+			"UPDATE forms SET updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now') WHERE id = ?"
+		)
+		.run(page.form_id)
+
+	return true
+})
+
+export const pagesRepository = {
+	countByFormId,
+	create,
+	findById,
+	hasAnswers,
+	remove,
+	update
+}

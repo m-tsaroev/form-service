@@ -2,6 +2,7 @@ import { Button, Form, FormField, Input, Textarea } from '@shared/ui'
 import { FilePenLine } from 'lucide-react'
 
 import { useFormEditorStore } from '@/entities/form'
+import { DeleteFormPageButton } from '@/features/delete-form-page'
 
 import type { PageSettingsInput } from '../model/pageSettings.schema'
 import { useUpdateFormPageForm } from '../model/useUpdateFormPageForm'
@@ -10,7 +11,7 @@ import styles from './PageSettings.module.scss'
 import type { PageSettingsProps } from './PageSettings.types'
 
 const PageSettings = (props: PageSettingsProps) => {
-	const { formId, page } = props
+	const { formId, isLastPage, onPageDeleted, page } = props
 	const { error, form, handleSubmit, isPending } = useUpdateFormPageForm(
 		page,
 		formId
@@ -64,6 +65,15 @@ const PageSettings = (props: PageSettingsProps) => {
 					</Button>
 				</fieldset>
 			</Form>
+
+			{!isLastPage && (
+				<DeleteFormPageButton
+					formId={formId}
+					onPageDeleted={onPageDeleted}
+					pageId={page.id}
+					pageTitle={page.title ?? 'Без названия'}
+				/>
+			)}
 		</aside>
 	)
 }

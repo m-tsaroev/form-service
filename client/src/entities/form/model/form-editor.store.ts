@@ -7,6 +7,7 @@ type FormEditorOperationType =
 	| 'update'
 	| 'delete'
 	| 'add-page'
+	| 'delete-page'
 	| 'update-page'
 	| 'publish'
 	| 'unpublish'

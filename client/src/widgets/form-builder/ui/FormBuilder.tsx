@@ -151,6 +151,11 @@ const FormBuilder = (props: FormBuilderProps) => {
 		selectField(null)
 	}
 
+	const handlePageDeleted = (pageId: number) => {
+		setActivePageId(pageId)
+		selectField(null)
+	}
+
 	if (!activePage) {
 		return null
 	}
@@ -188,7 +193,13 @@ const FormBuilder = (props: FormBuilderProps) => {
 			{selectedField ? (
 				<FieldSettings field={selectedField} formId={form.id} />
 			) : (
-				<PageSettings formId={form.id} page={activePage} key={activePage.id} />
+				<PageSettings
+					formId={form.id}
+					isLastPage={form.pages.length === 1}
+					onPageDeleted={handlePageDeleted}
+					page={activePage}
+					key={activePage.id}
+				/>
 			)}
 		</div>
 	)

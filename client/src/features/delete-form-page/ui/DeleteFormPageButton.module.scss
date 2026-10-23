@@ -1,0 +1,39 @@
+.control {
+	display: flex;
+	padding-top: 20px;
+	border-top: var(--border);
+	flex-direction: column;
+	gap: 8px;
+}
+
+.deleteButton,
+.confirmButton {
+	color: var(--danger);
+
+	@include hover {
+		background-color: var(--danger-soft);
+		color: var(--danger);
+	}
+}
+
+.deleteButton {
+	align-self: flex-start;
+}
+
+.confirmation {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 8px;
+}
+
+.error {
+	color: var(--danger);
+	font-size: 12px;
+	line-height: 1.4;
+}
+
+@include mobile {
+	.deleteButton {
+		width: 100%;
+	}
+}
