@@ -74,6 +74,11 @@
 	gap: 12px;
 }
 
+.reorderError {
+	color: var(--danger);
+	font-size: 13px;
+}
+
 .empty {
 	padding: 32px 20px;
 	border: 1px dashed var(--border-color-secondary);

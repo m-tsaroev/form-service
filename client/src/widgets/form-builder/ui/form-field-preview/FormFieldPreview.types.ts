@@ -9,4 +9,9 @@ type FormFieldPreviewProps = {
 	onSelect: (fieldId: number) => void
 }
 
-export type { FormFieldPreviewProps }
+type FormFieldDragOverlayProps = Pick<
+	FormFieldPreviewProps,
+	'field' | 'isDirty'
+>
+
+export type { FormFieldDragOverlayProps, FormFieldPreviewProps }

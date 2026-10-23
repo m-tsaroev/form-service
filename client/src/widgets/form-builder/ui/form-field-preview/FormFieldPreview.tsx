@@ -1,12 +1,22 @@
+import { useSortable } from '@dnd-kit/sortable'
 import { Input, Textarea } from '@shared/ui'
 import clsx from 'clsx'
-import { ChevronDown, GripVertical } from 'lucide-react'
+import { ChevronDown, GripVertical, Trash2 } from 'lucide-react'
+import type { CSSProperties } from 'react'
 
 import type { FormField } from '@/entities/form'
 import { DeleteFormFieldButton } from '@/features/delete-form-field'
 
 import styles from './FormFieldPreview.module.scss'
-import type { FormFieldPreviewProps } from './FormFieldPreview.types'
+import type {
+	FormFieldDragOverlayProps,
+	FormFieldPreviewProps
+} from './FormFieldPreview.types'
+
+const SORTABLE_TRANSITION = {
+	duration: 140,
+	easing: 'cubic-bezier(0.25, 1, 0.5, 1)'
+}
 
 const FIELD_TYPE_LABELS: Record<FormField['type'], string> = {
 	text: 'Текст',
@@ -90,14 +100,91 @@ const FieldControl = (props: { field: FormField }) => {
 	)
 }
 
-const FormFieldPreview = (props: FormFieldPreviewProps) => {
-	const { field, formId, isDisabled, isDirty, isSelected, onSelect } = props
+const renderFieldContent = (field: FormField, isDirty: boolean) => (
+	<div className={styles.content}>
+		<div className={styles.meta}>
+			<span className={styles.typeBadge}>{FIELD_TYPE_LABELS[field.type]}</span>
+			{isDirty && (
+				<span
+					className={styles.dirtyIndicator}
+					title='Есть несохранённые изменения'
+					aria-label='Есть несохранённые изменения'
+				/>
+			)}
+		</div>
+
+		<div className={styles.fieldBody}>
+			<p className={styles.label}>
+				{field.label}
+				{field.required && (
+					<span className={styles.required} aria-label='обязательное поле'>
+						*
+					</span>
+				)}
+			</p>
+			{field.description && (
+				<p className={styles.description}>{field.description}</p>
+			)}
+			<FieldControl field={field} />
+		</div>
+	</div>
+)
+
+const FormFieldDragOverlay = (props: FormFieldDragOverlayProps) => {
+	const { field, isDirty } = props
 
 	return (
 		<article
-			className={clsx(styles.field, isSelected && styles.isSelected)}
+			className={clsx(styles.field, styles.dragOverlay)}
+			aria-hidden='true'
+		>
+			<span className={styles.dragHandle}>
+				<GripVertical size={20} aria-hidden='true' />
+			</span>
+			{renderFieldContent(field, isDirty)}
+			<span className={styles.deletePlaceholder}>
+				<Trash2 size={18} aria-hidden='true' />
+			</span>
+		</article>
+	)
+}
+
+const FormFieldPreview = (props: FormFieldPreviewProps) => {
+	const { field, formId, isDisabled, isDirty, isSelected, onSelect } = props
+
+	const {
+		attributes,
+		isDragging,
+		listeners,
+		setActivatorNodeRef,
+		setNodeRef,
+		transform,
+		transition
+	} = useSortable({
+		id: field.id,
+		disabled: isDisabled,
+		transition: SORTABLE_TRANSITION
+	})
+
+	const sortableStyle: CSSProperties = {
+		transform:
+			!isDragging && transform
+				? `translate3d(0, ${transform.y}px, 0)`
+				: undefined,
+		transition: isDragging ? 'none' : transition
+	}
+
+	return (
+		<article
+			className={clsx(
+				styles.field,
+				isSelected && styles.isSelected,
+				isDragging && styles.isDragging
+			)}
 			data-form-field-id={field.id}
 			aria-disabled={isDisabled}
+			ref={setNodeRef}
+			style={sortableStyle}
 		>
 			<button
 				className={styles.selectButton}
@@ -109,41 +196,19 @@ const FormFieldPreview = (props: FormFieldPreviewProps) => {
 				onClick={() => onSelect(field.id)}
 			/>
 
-			<GripVertical
+			<button
 				className={styles.dragHandle}
-				size={20}
-				aria-hidden='true'
-			/>
+				type='button'
+				disabled={isDisabled}
+				ref={setActivatorNodeRef}
+				{...attributes}
+				{...listeners}
+				aria-label={`Изменить порядок поля «${field.label}»`}
+			>
+				<GripVertical size={20} aria-hidden='true' />
+			</button>
 
-			<div className={styles.content}>
-				<div className={styles.meta}>
-					<span className={styles.typeBadge}>
-						{FIELD_TYPE_LABELS[field.type]}
-					</span>
-					{isDirty && (
-						<span
-							className={styles.dirtyIndicator}
-							title='Есть несохранённые изменения'
-							aria-label='Есть несохранённые изменения'
-						/>
-					)}
-				</div>
-
-				<div className={styles.fieldBody}>
-					<p className={styles.label}>
-						{field.label}
-						{field.required && (
-							<span className={styles.required} aria-label='обязательное поле'>
-								*
-							</span>
-						)}
-					</p>
-					{field.description && (
-						<p className={styles.description}>{field.description}</p>
-					)}
-					<FieldControl field={field} />
-				</div>
-			</div>
+			{renderFieldContent(field, isDirty)}
 
 			<DeleteFormFieldButton
 				className={styles.deleteControl}
@@ -155,4 +220,4 @@ const FormFieldPreview = (props: FormFieldPreviewProps) => {
 	)
 }
 
-export { FormFieldPreview }
+export { FormFieldDragOverlay, FormFieldPreview }

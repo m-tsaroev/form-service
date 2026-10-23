@@ -31,6 +31,9 @@ export const API_ROUTES = {
 	PAGE_FIELDS(id: string | number) {
 		return `/pages/${id}/fields`
 	},
+	PAGE_FIELDS_ORDER(id: string | number) {
+		return `/pages/${id}/fields/order`
+	},
 	PUBLIC_FORM(slug: string) {
 		return `/public/forms/${slug}`
 	},
