@@ -17,6 +17,14 @@ npm start
 Приложение будет доступно на <http://localhost:3000>. Другой порт можно
 передать через переменную окружения `PORT`.
 
+## Документация
+
+- [Навигация по документации](docs/README.md)
+- [Разработка и проверки](docs/development.md)
+- [Архитектура](docs/architecture.md)
+- [HTTP API](docs/api.md)
+- [Журнал разработки с помощью ИИ](AI_LOG.md)
+
 ## Разработка
 
 ```bash
@@ -31,4 +39,3 @@ Express-сервер по адресу <http://localhost:3000>.
 - `npm run build` — проверка типов и production-сборка клиента;
 - `npm run typecheck` — проверка TypeScript;
 - `npm run lint` — проверка ESLint.
-# form-service
